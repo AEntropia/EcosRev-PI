@@ -4,10 +4,9 @@ import { IBeneficios } from "@/interfaces/IBeneficios";
 import { BeneficioEditValidator } from "@/validators/BeneficioEditValidator";
 import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { ThemeProvider } from "@mui/material/styles";
-import theme from "../../../../theme/Theme";
 import axios from "axios";
 import Layout from "@/components/UI/organisms/Layout";
+import router, { useRouter } from "next/navigation";
 
 const CadastroTemplate: React.FC = () => {
   const formik = useFormik<IBeneficios>({
@@ -32,9 +31,15 @@ const CadastroTemplate: React.FC = () => {
 
   const { handleSubmit, values, handleChange, errors } = formik;
 
+  const router = useRouter();
+
+  const handleCancel = () => {
+    router.push("/home"); // Redireciona para a página principal
+  };
+
+
   return (
-    <ThemeProvider theme={theme}>
-        <Layout>
+    <Layout>
       <Box
         sx={{
           display: "flex",
@@ -44,6 +49,7 @@ const CadastroTemplate: React.FC = () => {
           padding: 4,
           borderRadius: 2,
           boxShadow: 3,
+          mt: 4,
         }}
       >
         <Typography variant="h5" color="primary" sx={{ mb: 2 }}>
@@ -95,7 +101,7 @@ const CadastroTemplate: React.FC = () => {
           />
           
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-            <Button variant="outlined" color="secondary">
+            <Button variant="outlined" color="secondary" onClick={handleCancel}>
               Cancelar
             </Button>
             <Button variant="contained" color="primary" type="submit">
@@ -104,8 +110,7 @@ const CadastroTemplate: React.FC = () => {
           </Box>
         </Box>
       </Box>
-      </Layout>
-    </ThemeProvider>
+    </Layout>
   );
 };
 

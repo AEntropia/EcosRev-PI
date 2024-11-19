@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ThemeProvider } from "@emotion/react";
-import theme from "../../../../theme/Theme";
+import theme from "../../../../themes/userTheme";
 import BeneficiosEdit from "../../../../src/app/beneficios/edit/[slug]/page"; // caminho do componente
 import { withDataFetching } from "@/components/HOCS/withDataFetching";
 

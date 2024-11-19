@@ -5,8 +5,6 @@ import EditTemplate from "@/components/templates/usuarios/EditTemplate";
 import { env } from "@/config/env";
 import { IUsuarios } from "@/interfaces/IUsuarios";
 import { useEffect, useState } from "react";
-import { ThemeProvider } from "@emotion/react";
-import theme from "../../../../../theme/Theme";
 import Layout from "@/components/UI/organisms/Layout";
 import { Container } from "@mui/material";
 
@@ -40,14 +38,11 @@ const UsuariosEdit: React.FC<UsuarioEditProps> = ({ params, data }) => {
   }, [data]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Layout>
-        <Container sx={{ paddingTop: 4 }}>
-          <EditTemplate usuario={usuario} />
-        </Container>
-      </Layout>
-    </ThemeProvider>
-
+    <Layout>
+      <Container sx={{ paddingTop: 4 }}>
+        <EditTemplate usuario={usuario} />
+      </Container>
+    </Layout>
   )
 };
 

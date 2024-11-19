@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Home from "../../../src/app/home/page";
 import { ThemeProvider } from "@emotion/react";
-import theme from "../../../theme/Theme";
+import theme from "../../../themes/userTheme";
 import { useRouter } from "next/navigation";
 
 // Mock do useRouter do Next.js

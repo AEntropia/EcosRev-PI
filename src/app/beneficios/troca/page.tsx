@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Modal, Typography, Box, Button } from "@mui/material";
 import Layout from "@/components/UI/organisms/Layout";
-import { ThemeProvider } from "@emotion/react";
-import theme from "../../../../theme/Theme";
 import { env } from "@/config/env";
 
 interface SelectableTableProps {
@@ -84,21 +82,19 @@ const Beneficios = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Layout>
-        <Container sx={{ paddingTop: 4 }}>
-          <SelectableTable rows={rows} onRowSelect={handleRowSelect} />
-          
-          {/* Condicionalmente renderiza o Box com o total de pontos, apenas se houverem itens selecionados */}
-          {selectedRows.length > 0 && (
-            <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", bgcolor: "background.paper", p: 4, borderRadius: 2, boxShadow: 24 }}>
-              <Typography variant="h6">Total de Pontos Selecionados</Typography>
-              <Typography variant="body1" sx={{ mt: 2 }}>{`Pontos Totais: ${totalPoints}`}</Typography>
-            </Box>
-          )}
-        </Container>
-      </Layout>
-    </ThemeProvider>
+    <Layout>
+      <Container sx={{ paddingTop: 4 }}>
+        <SelectableTable rows={rows} onRowSelect={handleRowSelect} />
+        
+        {/* Condicionalmente renderiza o Box com o total de pontos, apenas se houverem itens selecionados */}
+        {selectedRows.length > 0 && (
+          <Box sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", bgcolor: "background.paper", p: 4, borderRadius: 2, boxShadow: 24 }}>
+            <Typography variant="h6">Total de Pontos Selecionados</Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>{`Pontos Totais: ${totalPoints}`}</Typography>
+          </Box>
+        )}
+      </Container>
+    </Layout>
   );
 };
 

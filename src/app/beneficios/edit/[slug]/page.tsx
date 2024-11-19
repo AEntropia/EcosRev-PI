@@ -5,8 +5,6 @@ import EditTemplate from "@/components/templates/beneficio/EditTemplate";
 import { env } from "@/config/env";
 import { IBeneficios } from "@/interfaces/IBeneficios";
 import { useEffect, useState } from "react";
-import { ThemeProvider } from "@emotion/react";
-import theme from "../../../../../theme/Theme";
 import Layout from "@/components/UI/organisms/Layout";
 import { Container } from "@mui/material";
 
@@ -38,14 +36,11 @@ const BeneficiosEdit: React.FC<BeneficioEditProps> = ({ params, data }) => {
   }, [data]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <Layout>
-        <Container sx={{ paddingTop: 4 }}>
-          <EditTemplate beneficio={beneficio} />
-        </Container>
-      </Layout>
-    </ThemeProvider>
-
+    <Layout>
+      <Container sx={{ paddingTop: 4 }}>
+        <EditTemplate beneficio={beneficio} />
+      </Container>
+    </Layout>
   )
 };
 

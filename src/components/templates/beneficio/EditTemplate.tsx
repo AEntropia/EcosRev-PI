@@ -6,7 +6,7 @@ import { Box, Button, Container, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import { useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
-import theme from "../../../../theme/Theme";
+import theme from "../../../../themes/userTheme";
 
 interface EditTemplateProps {
   beneficio?: IBeneficios;

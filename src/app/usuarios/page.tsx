@@ -6,8 +6,6 @@ import { env } from "@/config/env";
 import { Container } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { ThemeProvider } from "@emotion/react";
-import theme from "../../../theme/Theme";
 
 const Usuarios = () => {
   const [rows, setRows] = useState([]);
@@ -54,17 +52,15 @@ const Usuarios = () => {
   ];
 
   return (
-    <ThemeProvider theme={theme}>
-      <Layout>
-        <Container sx={{ paddingTop: 4 }}>          
-          <CustomTable
-            rows={rows}
-            headCells={headCells}
-            editPath="/usuarios/edit"
-          />
-        </Container>
-      </Layout>
-    </ThemeProvider>
+    <Layout>
+      <Container sx={{ paddingTop: 4 }}>          
+        <CustomTable
+          rows={rows}
+          headCells={headCells}
+          editPath="/usuarios/edit"
+        />
+      </Container>
+    </Layout>
   );
 };
 
