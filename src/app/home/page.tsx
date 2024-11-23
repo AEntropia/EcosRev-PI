@@ -130,6 +130,7 @@ function Testimonials() {
     <Box
       sx={{ backgroundColor: "#f9f9f9", padding: "60px 0" }}
       textAlign="center"
+      data-testid="testimonials-section" // Adicionando um test ID aqui
     >
       <Container>
         <Typography
