@@ -1,10 +1,22 @@
 import { Alert, AlertTitle, CircularProgress } from "@mui/material";
 import axios from "axios";
+import { userService } from "../../../routes/userRoute";
 import { useEffect, useState } from "react";
 
-export const withDataFetching = (url: string) => (WrappedComponent: any) => {
+interface User {
+  _id: string;
+  nome: string;
+  email: string;
+  senha: string;
+  tipo: string;
+  pontos: string;
+  ativo: boolean;
+  // outros campos...
+}
+
+export const withDataFetching = () => (WrappedComponent: any) => {
   return function WithDataFetching(props: any) {
-    const [data, setData] = useState();
+    const [data, setData] = useState<User>();
     const [error, setError] = useState<string>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -12,8 +24,8 @@ export const withDataFetching = (url: string) => (WrappedComponent: any) => {
       const fetchData = async () => {
         const id = props.params?.slug ? `/${props.params?.slug}` : "";
         try {
-          const response = await axios.get(`${url}${id}`);
-          setData(response.data);
+          const response = await userService.getUserById(`${id}`);
+          setData(response);
         } catch (_error) {
           setError("Erro ao tentar realizar a consulta");
         } finally {

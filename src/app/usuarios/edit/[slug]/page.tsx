@@ -24,7 +24,7 @@ const UsuariosEdit: React.FC<UsuarioEditProps> = ({ params, data }) => {
       email: email,
       senha: pass,
       pontos: points,
-      tipo: type
+      tipo: type,
     } = data;
 
     setUsuario({
@@ -43,7 +43,7 @@ const UsuariosEdit: React.FC<UsuarioEditProps> = ({ params, data }) => {
         <EditTemplate usuario={usuario} />
       </Container>
     </Layout>
-  )
+  );
 };
 
-export default withDataFetching(`${env.apiBaseUrl}/usuarios`)(UsuariosEdit);
+export default withDataFetching()(UsuariosEdit);

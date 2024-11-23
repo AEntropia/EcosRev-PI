@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "./teste";
+import { login } from "./login_api";
 import { useRouter } from "next/navigation";
 import { AuthForm } from "@/components/UI/molecules/AuthForm";
 import { AuthTemplate } from "@/components/templates/auth/AuthTemplate";
 import backgroundImage from "../../public/images/loginImg.jpg";
 import Header from "@/components/UI/molecules/Header";
 import { Button } from "@mui/material";
+import { userService } from "../../routes/userRoute";
 
 // import { useAuth } from "../../src/context/AuthContext";
 // deixei o authprovider comentado enquanto aguarda a conexao com api
 
 export default function Home() {
+  userService.getAllUsers();
   login("sandman2871@gmail.com", "Mateus123#");
   const router = useRouter();
   // const { login } = useAuth(); // Acesso à função de login do contexto
