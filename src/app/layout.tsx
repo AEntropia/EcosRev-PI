@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState, useEffect, ReactNode } from "react";
 import userTheme from "../../themes/userTheme";
@@ -15,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       {/* <AuthProvider> */}
-        <ThemeSelector>
-          <body>{children}</body>
-        </ThemeSelector>
+      <ThemeSelector>
+        <body>{children}</body>
+      </ThemeSelector>
       {/* </AuthProvider> */}
     </html>
   );
@@ -27,7 +27,7 @@ const ThemeSelector = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    /*const fetchUserData = async () => {
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASEURL}/user` //implementar o link da API aqui
@@ -44,7 +44,7 @@ const ThemeSelector = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    fetchUserData();
+    fetchUserData()*/
   }, []);
 
   return (
