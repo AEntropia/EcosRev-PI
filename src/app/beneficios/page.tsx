@@ -6,21 +6,23 @@ import { env } from "@/config/env";
 import { Container } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { benefitsService } from "../../../routes/benefitRoute";
+import { IBeneficios } from "@/interfaces/IBeneficios";
 
 const Beneficios = () => {
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState<IBeneficios[]>([]);
 
   useEffect(() => {
     const fetchBeneficios = async () => {
-      const response = await axios.get(`${env.apiBaseUrl}/beneficios`);
-      console.log(response)
+      const response = await benefitsService.getAllBenefits();
 
-      const beneficios = response.data.map((beneficio: any) => ({
-        id: beneficio.id,
-        name: beneficio.nome,
-        address: beneficio.endereco,
-        points: beneficio.pontos,
-        qtd: beneficio.quantidade,
+      const beneficios = response.map((beneficio: any) => ({
+        id: beneficio._id,
+        data: beneficio.data,
+        nome: beneficio.nome,
+        endereco: beneficio.endereco,
+        pontos: beneficio.pontos,
+        quantidade: beneficio.quantidade,
       }));
 
       setRows(beneficios);
@@ -31,25 +33,31 @@ const Beneficios = () => {
 
   const headCells = [
     {
-      id: "name",
+      id: "nome",
       numeric: false,
       disablePadding: false,
       label: "Nome",
     },
     {
-      id: "address",
+      id: "data",
+      numeric: false,
+      disablePadding: false,
+      label: "Data",
+    },
+    {
+      id: "endereco",
       numeric: false,
       disablePadding: false,
       label: "Endereço",
     },
     {
-      id: "points",
+      id: "pontos",
       numeric: true,
       disablePadding: false,
       label: "Pontos",
     },
     {
-      id: "qtd",
+      id: "quantidade",
       numeric: true,
       disablePadding: false,
       label: "Quantidade",

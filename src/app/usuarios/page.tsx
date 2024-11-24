@@ -24,7 +24,6 @@ const Usuarios = () => {
   useEffect(() => {
     const fetchUsuarios = async () => {
       const response = await userService.getAllUsers();
-      console.log(response);
 
       const usuarios = response.map((usuario: any) => ({
         id: usuario._id,

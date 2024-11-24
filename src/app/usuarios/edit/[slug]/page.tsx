@@ -16,26 +16,27 @@ interface UsuarioEditProps {
 const UsuariosEdit: React.FC<UsuarioEditProps> = ({ params, data }) => {
   const [usuario, setUsuario] = useState<IUsuarios>();
 
-  console.log("data: ", data);
   useEffect(() => {
     if (!data) return;
 
     const {
       _id: _id,
-      nome: name,
+      nome: nome,
       email: email,
-      senha: pass,
-      pontos: points,
-      tipo: type,
+      senha: senha,
+      pontos: pontos,
+      tipo: tipo,
+      ativo: ativo,
     } = data[0];
 
     setUsuario({
       _id,
-      name,
+      nome,
       email,
-      pass,
-      points,
-      type,
+      senha,
+      pontos,
+      tipo,
+      ativo,
     });
   }, [data]);
 

@@ -7,22 +7,28 @@ import { useFormik } from "formik";
 import { useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../../../themes/userTheme";
+import { benefitsService } from "../../../../routes/benefitRoute";
+import { useRouter } from "next/navigation";
 
 interface EditTemplateProps {
   beneficio?: IBeneficios;
 }
 
 const EditTemplate: React.FC<EditTemplateProps> = ({ beneficio }) => {
+  const router = useRouter();
   const formik = useFormik<IBeneficios>({
     initialValues: {
-      name: "",
-      address: "",
-      points: 0,
-      qtd: 0,
+      _id: "",
+      data: "",
+      nome: "",
+      endereco: "",
+      pontos: 0,
+      quantidade: 0,
     },
     validationSchema: BeneficioEditValidator,
     onSubmit: (values) => {
-      console.log(values);
+      benefitsService.updateBenefit(values)
+      router.push("/beneficios");
     },
   });
 
@@ -31,8 +37,8 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ beneficio }) => {
   useEffect(() => {
     if (!beneficio) return;
 
-    const { id, ...prod } = beneficio;
-    setValues(prod);
+    const { _id, ...prod } = beneficio;
+    setValues(beneficio);
   }, [beneficio, setValues]);
 
   return (
@@ -55,35 +61,49 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ beneficio }) => {
 
             <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
               <TextField
-                name="name"
+                name="nome"
                 label="Nome"
                 fullWidth
                 margin="normal"
-                value={values.name}
+                value={values.nome}
                 onChange={handleChange}
-                error={!!errors.name}
-                helperText={errors.name}
+                error={!!errors.nome}
+                helperText={errors.nome}
               />
               <TextField
-                name="address"
+                name="data"
+                label="Data"
+                fullWidth
+                margin="normal"
+                type="date" // Define o tipo como "date"
+                value={values.data}
+                onChange={handleChange}
+                error={!!errors.data}
+                helperText={errors.data}
+                InputLabelProps={{
+                  shrink: true, // Garante que o label não sobreponha o valor
+              }}
+            />
+              <TextField
+                name="endereco"
                 label="Endereço"
                 fullWidth
                 margin="normal"
-                value={values.address}
+                value={values.endereco}
                 onChange={handleChange}
-                error={!!errors.address}
-                helperText={errors.address}
+                error={!!errors.endereco}
+                helperText={errors.endereco}
               />
               <TextField
-                name="points"
+                name="pontos"
                 label="Pontos"
                 fullWidth
                 margin="normal"
                 type="number"
-                value={values.points}
+                value={values.pontos}
                 onChange={handleChange}
-                error={!!errors.points}
-                helperText={errors.points}
+                error={!!errors.pontos}
+                helperText={errors.pontos}
               />
               <TextField
                 name="qtd"
@@ -91,19 +111,24 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ beneficio }) => {
                 fullWidth
                 margin="normal"
                 type="number"
-                value={values.qtd}
+                value={values.quantidade}
                 onChange={handleChange}
-                error={!!errors.qtd}
-                helperText={errors.qtd}
+                error={!!errors.quantidade}
+                helperText={errors.quantidade}
               />
               
               <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-                <Button variant="outlined" color="secondary">
-                  Cancelar
-                </Button>
-                <Button variant="contained" color="primary" type="submit">
-                  Atualizar
-                </Button>
+              <Button variant="outlined" color="secondary" onClick={() => router.push("/beneficios")}>
+              Cancelar
+            </Button>
+            <Button variant="contained" color="primary" type="submit">
+              Atualizar
+            </Button>
+            <Button variant="contained" color="primary" onClick={() => {
+              benefitsService.deleteBenefit(beneficio?._id)
+              router.push("/beneficios")}}>
+            Remover
+            </Button>
               </Box>
             </Box>
           </Box>

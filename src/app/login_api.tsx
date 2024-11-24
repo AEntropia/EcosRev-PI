@@ -1,59 +1,3 @@
-// import axios from "axios";
-// import { headers } from "next/headers";
-
-// const baseURL = "https://ecos-rev.vercel.app";
-
-// export async function login(): Promise<string | null> {
-//   try {
-//     const response = await axios(`${baseURL}/api/usuario/login`, {
-//       headers: {
-//         "Access-Control-Allow-Origin": "*",
-//         "Access-Control-Allow-Headers": "Authorization",
-//         "Access-Control-Allow-Methods":
-//           "GET, POST, OPTIONS, PUT, PATCH, DELETE",
-//         "Content-Type": "application/json;charset=UTF-8",
-//       },
-//       data: { email: "sandman2871@gmail.com", senha: "Mateus123#" },
-//     });
-
-//     if (response.status === 200) {
-//       const accessToken = response;
-//       console.log(response);
-//       if (accessToken) {
-//         console.log("Access Token:", accessToken);
-//         return accessToken as any;
-//       } else {
-//         console.error("Access Token não encontrado no cabeçalho.");
-//         return null;
-//       }
-//     } else {
-//       console.error("Erro no login:", response.data);
-//       return null;
-//     }
-//   } catch (error) {
-//     console.error("Erro ao fazer login:", error);
-//     return null;
-//   }
-// }
-
-// export async function fetchUsuarios(accessToken: string) {
-//   try {
-//     const response = await axios.get(`${baseURL}/api/usuarios`, {
-//       headers: {
-//         Authorization: `access_token: ${accessToken}`,
-//       },
-//     });
-
-//     if (response.status === 200) {
-//       console.log("Usuários:", response.data);
-//       return response.data;
-//     } else {
-//       console.error("Erro ao buscar usuários:", response.data);
-//     }
-//   } catch (error) {
-//     console.error("Erro ao acessar a API de usuários:", error);
-//   }
-// }
 import axios from "axios";
 
 const api = axios.create({
@@ -84,7 +28,6 @@ export async function login(
       localStorage.setItem("authToken", token);
       // Configura o token para futuras requisições
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      console.log(token);
       return token;
     }
 

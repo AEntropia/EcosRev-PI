@@ -2,21 +2,12 @@ import { Alert, AlertTitle, CircularProgress } from "@mui/material";
 import axios from "axios";
 import { userService } from "../../../routes/userRoute";
 import { useEffect, useState } from "react";
+import { IBeneficios } from "@/interfaces/IBeneficios";
+import { benefitsService } from "../../../routes/benefitRoute";
 
-interface User {
-  _id?: string;
-  nome: string;
-  email: string;
-  senha: string;
-  tipo: string;
-  pontos: string;
-  ativo?: boolean;
-  // outros campos...
-}
-
-export const withDataFetching = () => (WrappedComponent: any) => {
+export const withDataFetchingBenefit = () => (WrappedComponent: any) => {
   return function WithDataFetching(props: any) {
-    const [data, setData] = useState<User>();
+    const [dados, setData] = useState<IBeneficios>();
     const [error, setError] = useState<string>();
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -24,7 +15,7 @@ export const withDataFetching = () => (WrappedComponent: any) => {
       const fetchData = async () => {
         const id = props.params?.slug ? `/${props.params?.slug}` : "";
         try {
-          const response = await userService.getUserById(`${id}`);
+          const response = await benefitsService.getBenefitsById(id);
           setData(response);
         } catch (_error) {
           setError("Erro ao tentar realizar a consulta");
@@ -43,7 +34,7 @@ export const withDataFetching = () => (WrappedComponent: any) => {
             {error}
           </Alert>
         ) : undefined}
-        <WrappedComponent {...props} data={data} />;
+        <WrappedComponent {...props} dados={dados} />;
         {isLoading ? (
           <CircularProgress
             sx={{

@@ -1,25 +1,25 @@
 import { api } from "./middleware";
 
 // Interfaces
+
+interface iPontos{
+  pontos: string;
+}
 interface User {
-  _id: string;
+  _id?: string;
   nome: string;
   email: string;
   senha: string;
   tipo: string;
   pontos: string;
-  ativo: boolean;
+  ativo?: boolean;
   // outros campos...
 }
 
 interface CreateUserData {
-  _id: string;
   nome: string;
   email: string;
   senha: string;
-  tipo: string;
-  pontos: string;
-  ativo: boolean;
 }
 
 interface UpdateUserData {
@@ -34,7 +34,6 @@ export const userService = {
   async getAllUsers(): Promise<User[]> {
     try {
       const response = await api.get<User[]>("/usuario");
-      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Erro ao buscar usuários:", error);
@@ -65,9 +64,9 @@ export const userService = {
   },
 
   // PUT - Atualizar um usuário
-  async updateUser(userData: UpdateUserData): Promise<User> {
+  async updateUser(userData: User): Promise<User> {
     try {
-      const response = await api.put<User>(`/usuario/pontos`, userData);
+      const response = await api.put<User>(`/usuario/pontosPut`, userData);
       return response.data;
     } catch (error) {
       console.error(`Erro ao atualizar usuário:`, error);
@@ -76,7 +75,7 @@ export const userService = {
   },
 
   // DELETE - Remover um usuário
-  async deleteUser(id: number): Promise<void> {
+  async deleteUser(id?: string): Promise<void> {
     try {
       await api.delete(`/usuario/${id}`);
     } catch (error) {
@@ -84,4 +83,26 @@ export const userService = {
       throw error;
     }
   },
+  async getLoggedUser(): Promise<User[]> {
+    try {
+      const response = await api.get<User[]>("/usuario/pontos");
+      console.log(response.data)
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao buscar usuário:", error);
+      throw error;
+    }
+  },
+  async updateUserPoints(pontos : iPontos): Promise<User> {
+    try {
+      const response = await api.put<User>(`/usuario/pontos`, pontos);
+      return response.data;
+    } catch (error) {
+      console.error(`Erro ao atualizar usuário:`, error);
+      throw error;
+    }
+  },
 };
+
+
+
