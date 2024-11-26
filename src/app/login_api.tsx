@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const api = axios.create({
   baseURL: "https://ecos-rev.vercel.app/", // Substitua pela URL da sua API
@@ -6,7 +7,6 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
-
 interface LoginResponse {
   access_token: string;
   redirect_url: string;
@@ -28,8 +28,6 @@ export async function login(
       // Salva o token no localStorage
       localStorage.setItem("authToken", token);
       localStorage.setItem("isAdmin", response.data.redirect_url);
-      // Configura o token para futuras requisições
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       return token;
     }
 
@@ -61,5 +59,4 @@ export function getToken(): string | null {
 // Função para fazer logout
 export function logout(): void {
   localStorage.removeItem("authToken");
-  delete api.defaults.headers.common["Authorization"];
 }

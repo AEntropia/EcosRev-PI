@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"; // Adicione estes imports
 import logoSvg from "/public/images/logo.svg";
 import LeafButton from "../atoms/LeafButton";
 import leafIcon from "../../../../public/images/icon_leaf.png";
-import { isAdmin } from "../../../app/login_api"; // Importe a função isAdmin
+import { isAdmin, logout } from "../../../app/login_api"; // Importe a função isAdmin
 
 const Header = () => {
   const router = useRouter();
@@ -115,7 +115,13 @@ const Header = () => {
       {/* Só exibe o botão de "Sair" se não for uma página especial */}
       {!isSpecialPage && (
         <Box display="flex" justifyContent="flex-end" flexGrow={1}>
-          <LeafButton onClick={() => router.push("/")} iconSrc={leafIcon}>
+          <LeafButton
+            onClick={() => {
+              logout();
+              router.push("/");
+            }}
+            iconSrc={leafIcon}
+          >
             Sair
           </LeafButton>
         </Box>
