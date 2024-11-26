@@ -8,6 +8,7 @@ import axios from "axios";
 import Layout from "@/components/UI/organisms/Layout";
 import router, { useRouter } from "next/navigation";
 import { benefitsService } from "../../../../routes/benefitRoute";
+import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 
 const CadastroTemplate: React.FC = () => {
   const formik = useFormik<IBeneficios>({
@@ -20,9 +21,9 @@ const CadastroTemplate: React.FC = () => {
     },
     validationSchema: BeneficioEditValidator,
     onSubmit: async (values) => {
-      console.log(values)
+      console.log(values);
       try {
-        const response = benefitsService.createBenefit(values) // Altere a URL conforme necessário
+        const response = benefitsService.createBenefit(values); // Altere a URL conforme necessário
         console.log("Cadastro realizado com sucesso:", response);
         // Aqui você pode redirecionar ou exibir uma mensagem de sucesso
       } catch (error) {
@@ -39,7 +40,6 @@ const CadastroTemplate: React.FC = () => {
   const handleCancel = () => {
     router.push("/home"); // Redireciona para a página principal
   };
-
 
   return (
     <Layout>
@@ -116,7 +116,7 @@ const CadastroTemplate: React.FC = () => {
             error={!!errors.quantidade}
             helperText={errors.quantidade}
           />
-          
+
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
             <Button variant="outlined" color="secondary" onClick={handleCancel}>
               Cancelar
@@ -131,4 +131,4 @@ const CadastroTemplate: React.FC = () => {
   );
 };
 
-export default CadastroTemplate;
+export default withAdminProtection(CadastroTemplate);

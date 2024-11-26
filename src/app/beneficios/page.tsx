@@ -8,6 +8,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { benefitsService } from "../../../routes/benefitRoute";
 import { IBeneficios } from "@/interfaces/IBeneficios";
+import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 
 const Beneficios = () => {
   const [rows, setRows] = useState<IBeneficios[]>([]);
@@ -66,7 +67,7 @@ const Beneficios = () => {
 
   return (
     <Layout>
-      <Container sx={{ paddingTop: 4 }}>          
+      <Container sx={{ paddingTop: 4 }}>
         <CustomTable
           rows={rows}
           headCells={headCells}
@@ -77,4 +78,4 @@ const Beneficios = () => {
   );
 };
 
-export default Beneficios;
+export default withAdminProtection(Beneficios);

@@ -7,6 +7,7 @@ import { Container } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { userService } from "../../../routes/userRoute";
+import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 
 interface User {
   id: string;
@@ -74,4 +75,4 @@ const Usuarios = () => {
   );
 };
 
-export default Usuarios;
+export default withAdminProtection(Usuarios);

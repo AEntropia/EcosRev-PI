@@ -7,6 +7,7 @@ import { IBeneficios } from "@/interfaces/IBeneficios";
 import { useEffect, useState } from "react";
 import Layout from "@/components/UI/organisms/Layout";
 import { Container } from "@mui/material";
+import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 
 interface BeneficioEditProps {
   params: { slug: string };
@@ -43,7 +44,7 @@ const BeneficiosEdit: React.FC<BeneficioEditProps> = ({ params, dados }) => {
         <EditTemplate beneficio={beneficio} />
       </Container>
     </Layout>
-  )
+  );
 };
 
-export default withDataFetchingBenefit()(BeneficiosEdit);
+export default withAdminProtection(withDataFetchingBenefit()(BeneficiosEdit));

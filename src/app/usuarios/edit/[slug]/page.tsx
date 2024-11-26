@@ -7,6 +7,7 @@ import { IUsuarios } from "@/interfaces/IUsuarios";
 import { useEffect, useState } from "react";
 import Layout from "@/components/UI/organisms/Layout";
 import { Container } from "@mui/material";
+import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 
 interface UsuarioEditProps {
   params: { slug: string };
@@ -49,4 +50,4 @@ const UsuariosEdit: React.FC<UsuarioEditProps> = ({ params, data }) => {
   );
 };
 
-export default withDataFetching()(UsuariosEdit);
+export default withAdminProtection(withDataFetching()(UsuariosEdit));

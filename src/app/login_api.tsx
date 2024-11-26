@@ -27,7 +27,7 @@ export async function login(
       const token = response.data.access_token;
       // Salva o token no localStorage
       localStorage.setItem("authToken", token);
-      localStorage.setItem("isAdmin", response.data.redirect_url)
+      localStorage.setItem("isAdmin", response.data.redirect_url);
       // Configura o token para futuras requisições
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       return token;
@@ -45,7 +45,7 @@ export async function login(
   }
 }
 export function isAdmin(): string | null {
-  const adm = localStorage.getItem("isAdmin")
+  const adm = localStorage.getItem("isAdmin");
   return adm == "menu.html" ? "admin" : "cliente";
 }
 // Função para verificar se o usuário está autenticado
