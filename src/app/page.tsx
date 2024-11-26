@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "./login_api";
+import { login, isAdmin } from "./login_api";
 import { useRouter } from "next/navigation";
 import { AuthForm } from "@/components/UI/molecules/AuthForm";
 import { AuthTemplate } from "@/components/templates/auth/AuthTemplate";
@@ -42,6 +42,7 @@ export default function Home() {
        } else {
          alert("Por favor, preencha os campos.");
        }
+       console.log(isAdmin())
      };
 
     //   console.log("Email:", email, "Senha:", password);
