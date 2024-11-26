@@ -2,7 +2,7 @@ import { Box, Button } from "@mui/material";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react"; // Adicione estes imports
-import logoSvg from "/public/images/logo.svg";
+import logoSvg from "../../../../public/images/logo.svg";
 import LeafButton from "../atoms/LeafButton";
 import leafIcon from "../../../../public/images/icon_leaf.png";
 import { isAdmin, logout } from "../../../app/login_api"; // Importe a função isAdmin

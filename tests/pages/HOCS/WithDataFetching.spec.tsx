@@ -27,7 +27,7 @@ describe("withDataFetching HOC", () => {
   it("deve exibir o CircularProgress durante o carregamento", async () => {
     (axios.get as jest.Mock).mockReturnValue(new Promise(() => {})); // promessa pendente
 
-    const WrappedComponent = withDataFetching(mockUrl)(MockComponent);
+    const WrappedComponent = withDataFetching()(MockComponent);
     render(<WrappedComponent params={{ slug: "1" }} />);
 
     expect(screen.getByTestId("circular-progress")).toBeInTheDocument();
@@ -36,7 +36,7 @@ describe("withDataFetching HOC", () => {
   it("deve exibir o componente wrapped com os dados ao finalizar o carregamento com sucesso", async () => {
     (axios.get as jest.Mock).mockResolvedValue({ data: mockData });
 
-    const WrappedComponent = withDataFetching(mockUrl)(MockComponent);
+    const WrappedComponent = withDataFetching()(MockComponent);
     render(<WrappedComponent params={{ slug: "1" }} />);
 
     await waitFor(() =>
@@ -50,7 +50,7 @@ describe("withDataFetching HOC", () => {
   it("deve exibir um Alert de erro se a requisição falhar", async () => {
     (axios.get as jest.Mock).mockRejectedValue(new Error("Erro na requisição"));
 
-    const WrappedComponent = withDataFetching(mockUrl)(MockComponent);
+    const WrappedComponent = withDataFetching()(MockComponent);
     render(<WrappedComponent params={{ slug: "1" }} />);
 
     await waitFor(() =>

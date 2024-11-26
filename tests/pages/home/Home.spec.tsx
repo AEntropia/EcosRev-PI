@@ -1,51 +1,95 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Home from "../../../src/app/home/page";
-import { ThemeProvider } from "@emotion/react";
-import theme from "../../../themes/userTheme";
-import { useRouter } from "next/navigation";
+import Home from "../../../src/app/home/page"; // Atualize o caminho conforme necessário
+import { ReactNode } from "react";
 
-// Mock do useRouter do Next.js
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(),
+// Mock do componente Layout
+jest.mock("@/components/UI/organisms/Layout", () => ({
+  __esModule: true,
+  default: ({ children }: { children: ReactNode }) => (
+    <div data-testid="layout-mock">{children}</div>
+  ),
 }));
 
-// Tipagem correta para `useRouter` como uma função mockada
-const mockUseRouter = useRouter as jest.Mock;
+// Mock do componente Carousel
+jest.mock("@/components/UI/molecules/Carousel", () => ({
+  __esModule: true,
+  default: ({
+    slides,
+  }: {
+    slides: Array<{ imageSrc: string; altText: string; caption: string }>;
+  }) => (
+    <div data-testid="carousel-mock">
+      {slides.map((slide, index) => (
+        <div key={index} data-testid="carousel-slide">
+          <img src={slide.imageSrc} alt={slide.altText} />
+          <p>{slide.caption}</p>
+        </div>
+      ))}
+    </div>
+  ),
+}));
 
-jest.mock(
-  "@/components/UI/organisms/Layout",
-  () =>
-    ({ children }: { children: React.ReactNode }) =>
-      <div data-testid="layout">{children}</div>
-);
-
-jest.mock("next/image", () => (props: any) => (
-  <img {...props} alt="Mocked Image" />
-));
+// Mock do hook useRouter usando jest.mock
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn().mockResolvedValue(undefined),
+    route: "/",
+    pathname: "/",
+    query: {},
+    asPath: "/",
+  }),
+}));
 
 describe("Home Page", () => {
-  beforeEach(() => {
-    mockUseRouter.mockReturnValue({
-      push: jest.fn(),
-    });
+  it("renders the layout", () => {
+    render(<Home />);
+    expect(screen.getByTestId("layout-mock")).toBeInTheDocument();
   });
 
-  it("deve renderizar o Layout e componentes principais", () => {
-    render(
-      <ThemeProvider theme={theme}>
-        <Home />
-      </ThemeProvider>
-    );
-
-    // Verificar se o Layout e cada seção são renderizados corretamente
-    expect(screen.getByTestId("layout")).toBeInTheDocument();
+  it("renders the carousel with correct slides", () => {
+    render(<Home />);
+    const slides = screen.getAllByTestId("carousel-slide");
+    expect(slides).toHaveLength(6); // Deve ter 6 slides no carousel
+    expect(screen.getByAltText("Imagem 1")).toBeInTheDocument();
     expect(
-      screen.getByText(/Descarte seus resíduos eletrônicos corretamente/i)
+      screen.getByText(
+        "Descubra como reciclar eletrônicos de forma sustentável!"
+      )
     ).toBeInTheDocument();
-    expect(screen.getByText(/Bem-vindo ao EcosRev/i)).toBeInTheDocument();
-    expect(screen.getByText(/O que oferecemos/i)).toBeInTheDocument();
-    expect(screen.getByText(/Depoimentos/i)).toBeInTheDocument();
+  });
+
+  it("renders the Introduction section", () => {
+    render(<Home />);
+    expect(screen.getByText("Bem-vindo ao EcosRev")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Uma plataforma inovadora para reciclagem de resíduo eletrônico e troca de pontos por recompensas. Junte-se a nós e faça parte da mudança!"
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("renders the Services section", () => {
+    render(<Home />);
+    expect(screen.getByText("O que oferecemos")).toBeInTheDocument();
+    expect(screen.getByText("Reciclagem de Eletrônicos")).toBeInTheDocument();
+    expect(screen.getByText("Acúmulo de Pontos")).toBeInTheDocument();
+    expect(screen.getByText("Recompensas Exclusivas")).toBeInTheDocument();
+  });
+
+  it("renders the Testimonials section", () => {
+    render(<Home />);
+    const testimonialsSection = screen.getByTestId("testimonials-section");
+    expect(testimonialsSection).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /O EcosRev facilitou a reciclagem de eletrônicos na minha casa/i
+      )
+    ).toBeInTheDocument();
   });
 });
