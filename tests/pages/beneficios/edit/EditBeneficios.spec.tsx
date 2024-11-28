@@ -3,8 +3,32 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ThemeProvider } from "@emotion/react";
 import theme from "../../../../themes/userTheme";
-import BeneficiosEdit from "../../../../src/app/beneficios/edit/[slug]/page"; // caminho do componente
+import BeneficiosEdit from "../../../../src/app/beneficios/edit/[slug]/page"; // Caminho correto do seu componente
+import { useRouter } from 'next/router';
 import { withDataFetching } from "@/components/HOCS/withDataFetching";
+import  AppRouter  from 'next/app';
+
+
+// Mock do useRouter
+jest.mock("next/router", () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),  // Mock da navegação
+    query: { slug: "beneficio-teste" },  // Mock de query
+  }),
+}));
+
+// Mock do isAdmin
+jest.mock('@/app/login_api', () => ({
+  isAdmin: jest.fn().mockReturnValue("admin"),  // Mock para retornar sempre "admin"
+}));
+
+jest.mock("@/components/HOCS/withDataFetching", () => ({
+  withDataFetching: jest.fn().mockImplementation((Component) => Component), // Mock do HOC
+}));
+
+jest.mock("@/components/HOCS/withAdminProtection", () => ({
+  withAdminProtection: jest.fn().mockImplementation((Component) => Component), // Mock do HOC
+}));
 
 // Tipagem do mock do HOC withDataFetching
 jest.mock("@/components/HOCS/withDataFetching", () => ({
@@ -36,9 +60,9 @@ jest.mock("@/components/HOCS/withDataFetching", () => ({
 
 // Mock dos componentes usados no componente principal
 jest.mock("@/components/UI/organisms/Layout", () => {
-  const MockLayout: React.FC<{ children: React.ReactNode }> = ({
-    children,
-  }) => <div>{children}</div>;
+  const MockLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <div>{children}</div>
+  );
 
   // Define o displayName para o componente mockado
   MockLayout.displayName = "MockLayout";
@@ -47,9 +71,7 @@ jest.mock("@/components/UI/organisms/Layout", () => {
 });
 
 jest.mock("@mui/material", () => ({
-  Container: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
+  Container: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
 jest.mock("@/components/templates/beneficio/EditTemplate", () => {
@@ -70,21 +92,19 @@ jest.mock("@/components/templates/beneficio/EditTemplate", () => {
 
   return MockEditTemplate;
 });
-const mockData = {
-  id: 1,
-  nome: "Benefício Teste",
-  endereco: "Endereço Teste",
-  pontos: 100,
-  quantidade: 10,
-};
 
 describe("BeneficiosEdit", () => {
   it("deve renderizar o EditTemplate com os dados corretos", () => {
-    const params = { slug: "beneficio-teste" };
+    // Mock do useRouter
+    (useRouter as jest.Mock).mockReturnValue({
+      push: jest.fn(),
+      query: { slug: "beneficio-teste" },  // Mock do query diretamente
+    });
 
+    // Renderiza o componente dentro de um contexto de tema
     render(
       <ThemeProvider theme={theme}>
-        <BeneficiosEdit params={params} />
+        <BeneficiosEdit />
       </ThemeProvider>
     );
 
@@ -93,10 +113,10 @@ describe("BeneficiosEdit", () => {
     expect(editTemplate).toHaveTextContent(
       JSON.stringify({
         id: 1,
-        name: "Benefício Teste",
-        address: "Endereço Teste",
-        points: 100,
-        qtd: 10,
+        nome: "Benefício Teste",
+        endereco: "Endereço Teste",
+        pontos: 100,
+        quantidade: 10,
       })
     );
   });

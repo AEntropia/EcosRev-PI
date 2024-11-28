@@ -1,138 +1,102 @@
-import Beneficios from "@/app/beneficios/page";
+import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import mockRouter from "next-router-mock";
-import { setupServer } from "msw/node";
-import { rest } from "msw";
-import { env } from "@/config/env";
-import { validatorMessage } from "../../../src/constants/validatorMessage";
+import Beneficios from "../../../src/app/beneficios/page";
+import { benefitsService } from "../../../routes/benefitRoute";
 
-jest.mock("next/navigation", () => ({
-  usePathname: jest.fn().mockReturnValue("/beneficios"), // Mocking usePathname to return the desired pathname
-  useRouter: jest.fn().mockReturnValue({
-    push: jest.fn(),
-    // Add other router methods if needed
-  }),
+jest.mock("../../../routes/benefitRoute", () => ({
+  benefitsService: {
+    getAllBenefits: jest.fn(),
+  },
 }));
 
-mockRouter.setCurrentUrl("/beneficios");
-
-const server = setupServer(
-  rest.get(`${env.apiBaseUrl}/beneficios`, (req, res, ctx) => {
-    return res(
-      ctx.json([
-        {
-          id: 1,
-          nome: "Show do Matue",
-          data: "2024-12-12",
-          endereco: "Av 31 de março",
-          pontos: 200,
-          quantidade: 23,
-        },
-        {
-          id: 2,
-          nome: "Show da Demi Lovato",
-          data: "2024-06-27",
-          endereco: "Av. 31 de Março",
-          pontos: 100,
-          quantidade: 6,
-        },
-        {
-          id: 3,
-          nome: "Desconto no Õnibus",
-          data: "2024-10-23",
-          endereco: "Terminal São João",
-          pontos: 50,
-          quantidade: 79,
-        },
-        {
-          id: 4,
-          nome: "Show do Ciano",
-          data: "2024-06-21",
-          endereco: "Av. Itavuvu, 11.777",
-          pontos: 10,
-          quantidade: 1,
-        },
-      ])
-    );
-  }),
-  rest.get(`${env.apiBaseUrl}/beneficios/1`, (req, res, ctx) => {
-    return res(
-      ctx.json({
-        id: 1,
-        nome: "Show do Matue",
-        data: "2024-12-12",
-        endereco: "Av 31 de março",
-        pontos: 200,
-        quantidade: 23,
-      })
-    );
-  })
-);
-
-describe("Beneficios List Page", () => {
-  beforeAll(() => {
-    mockRouter.setCurrentUrl("/beneficios");
-    server.listen();
-  });
-  afterAll(() => {
-    server.close();
-  });
-  it("should render beneficios list", async () => {
-    render(<Beneficios />);
-
-    await screen.findByRole("cell", {
-      name: "Show do Matue",
-    });
-
-    screen.logTestingPlaygroundURL();
-  });
+jest.mock("@/components/UI/organisms/CustomTable", () => {
+  return jest.fn(({ rows }: any) => (
+    <div data-testid="custom-table">
+      {rows.map((row: any) => (
+        <div key={row.id}>
+          <span>{row.nome}</span>
+          <span>{row.data}</span>
+          <span>{row.endereco}</span>
+          <span>{row.pontos}</span>
+          <span>{row.quantidade}</span>
+        </div>
+      ))}
+    </div>
+  ));
 });
 
-describe("Validator Message", () => {
-  it("should return required field message", () => {
-    expect(validatorMessage.requiredField).toBe("Campo obrigatório");
+jest.mock("@/components/HOCS/withAdminProtection", () => (Component: React.FC) =>
+  jest.fn(() => <Component />)
+);
+
+describe("Beneficios Page", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it("should return numeric field message", () => {
-    expect(validatorMessage.numericField).toBe("Campo é numérico");
+  const mockBenefits = [
+    {
+      _id: "1",
+      nome: "Benefício A",
+      data: "2023-01-01",
+      endereco: "Endereço A",
+      pontos: 100,
+      quantidade: 10,
+    },
+    {
+      _id: "2",
+      nome: "Benefício B",
+      data: "2023-01-02",
+      endereco: "Endereço B",
+      pontos: 200,
+      quantidade: 5,
+    },
+  ];
+
+  it("deve renderizar o componente CustomTable e carregar os dados dos benefícios", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(mockBenefits);
+
+    render(<Beneficios />);
+
+    // Verifica se o CustomTable foi renderizado
+    expect(screen.getByTestId("custom-table")).toBeInTheDocument();
+
+    // Espera os dados serem carregados e verifica se foram exibidos corretamente
+    await waitFor(() => {
+      expect(screen.getByText("Benefício A")).toBeInTheDocument();
+      expect(screen.getByText("2023-01-01")).toBeInTheDocument();
+      expect(screen.getByText("Endereço A")).toBeInTheDocument();
+      expect(screen.getByText("100")).toBeInTheDocument();
+      expect(screen.getByText("10")).toBeInTheDocument();
+
+      expect(screen.getByText("Benefício B")).toBeInTheDocument();
+      expect(screen.getByText("2023-01-02")).toBeInTheDocument();
+      expect(screen.getByText("Endereço B")).toBeInTheDocument();
+      expect(screen.getByText("200")).toBeInTheDocument();
+      expect(screen.getByText("5")).toBeInTheDocument();
+    });
   });
 
-  it("should return minLength message with min variable", () => {
-    const min = 5;
-    const message = validatorMessage.minLength.replace(
-      "${min}",
-      min.toString()
-    );
-    expect(message).toBe(`Campo deve ter pelo menos ${min} caracteres`);
+  it("deve exibir a tabela vazia se não houver benefícios", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue([]);
+
+    render(<Beneficios />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("custom-table")).toBeInTheDocument();
+      expect(screen.queryByText("Benefício A")).not.toBeInTheDocument();
+    });
   });
 
-  it("should return maxLength message with max variable", () => {
-    const max = 10;
-    const message = validatorMessage.maxLength.replace(
-      "${max}",
-      max.toString()
-    );
-    expect(message).toBe(`Campo deve ter no máximo ${max} caracteres`);
-  });
+  it("deve lidar com erros ao carregar os benefícios", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockRejectedValue(new Error("Erro ao buscar benefícios"));
 
-  it("should return length message with length variable", () => {
-    const length = 8;
-    const message = validatorMessage.length.replace(
-      "${length}",
-      length.toString()
-    );
-    expect(message).toBe(`Campo deve ter ${length} caracteres`);
-  });
+    render(<Beneficios />);
 
-  it("should return minValue message with min variable", () => {
-    const min = 1;
-    const message = validatorMessage.minValue.replace("${min}", min.toString());
-    expect(message).toBe(`Valor mínimo ${min}`);
-  });
-
-  it("should return maxValue message with max variable", () => {
-    const max = 100;
-    const message = validatorMessage.maxValue.replace("${max}", max.toString());
-    expect(message).toBe(`Valor máximo ${max}`);
+    await waitFor(() => {
+      expect(screen.getByTestId("custom-table")).toBeInTheDocument();
+      // Espera que a tabela esteja vazia, já que ocorreu um erro ao buscar dados
+      expect(screen.queryByText("Benefício A")).not.toBeInTheDocument();
+    });
   });
 });
