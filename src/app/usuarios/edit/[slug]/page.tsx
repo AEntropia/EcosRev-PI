@@ -7,6 +7,7 @@ import { IUsuarios } from "@/interfaces/IUsuarios";
 import { useEffect, useState } from "react";
 import Layout from "@/components/UI/organisms/Layout";
 import { Container } from "@mui/material";
+import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 
 interface UsuarioEditProps {
   params: { slug: string };
@@ -18,22 +19,25 @@ const UsuariosEdit: React.FC<UsuarioEditProps> = ({ params, data }) => {
 
   useEffect(() => {
     if (!data) return;
+
     const {
-      id,
-      nome: name,
+      _id: _id,
+      nome: nome,
       email: email,
-      senha: pass,
-      pontos: points,
-      tipo: type
-    } = data;
+      senha: senha,
+      pontos: pontos,
+      tipo: tipo,
+      ativo: ativo,
+    } = data[0];
 
     setUsuario({
-      id,
-      name,
+      _id,
+      nome,
       email,
-      pass,
-      points,
-      type,
+      senha,
+      pontos,
+      tipo,
+      ativo,
     });
   }, [data]);
 
@@ -43,7 +47,7 @@ const UsuariosEdit: React.FC<UsuarioEditProps> = ({ params, data }) => {
         <EditTemplate usuario={usuario} />
       </Container>
     </Layout>
-  )
+  );
 };
 
-export default withDataFetching(`${env.apiBaseUrl}/usuarios`)(UsuariosEdit);
+export default withAdminProtection(withDataFetching()(UsuariosEdit));

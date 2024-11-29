@@ -17,6 +17,17 @@ const adminTheme = createTheme({
   typography: {
     fontFamily: "'Poppins', sans-serif", // Define a fonte padrão
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          "&.MuiButton-outlined:hover": {
+            backgroundColor: "#D6F5F1", // Hover mais forte para todos os botões
+          },
+        },
+      },
+    },
+  },
 });
 
 export default adminTheme;

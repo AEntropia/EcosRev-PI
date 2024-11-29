@@ -6,17 +6,28 @@ import { env } from "@/config/env";
 import { Container } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { userService } from "../../../routes/userRoute";
+import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  pass: string;
+  points: number;
+  type: string;
+  // outros campos...
+}
 
 const Usuarios = () => {
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState<User[]>([]);
 
   useEffect(() => {
     const fetchUsuarios = async () => {
-      const response = await axios.get(`${env.apiBaseUrl}/usuarios`);
-      console.log(response)
+      const response = await userService.getAllUsers();
 
-      const usuarios = response.data.map((usuario: any) => ({
-        id: usuario.id,
+      const usuarios = response.map((usuario: any) => ({
+        id: usuario._id,
         name: usuario.nome,
         email: usuario.email,
         pass: usuario.senha,
@@ -48,12 +59,12 @@ const Usuarios = () => {
       numeric: true,
       disablePadding: false,
       label: "Pontos",
-    }
+    },
   ];
 
   return (
     <Layout>
-      <Container sx={{ paddingTop: 4 }}>          
+      <Container sx={{ paddingTop: 4 }}>
         <CustomTable
           rows={rows}
           headCells={headCells}
@@ -64,4 +75,4 @@ const Usuarios = () => {
   );
 };
 
-export default Usuarios;
+export default withAdminProtection(Usuarios);

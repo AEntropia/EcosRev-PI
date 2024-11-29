@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, TextField, Card, CardContent, CardHeader, Avatar } from '@mui/material';
+import { TextField, Card, CardContent, CardHeader, Avatar } from '@mui/material';
 import '../../../../style/Perfil.css';
+import ButtonAtom from '@/components/UI/atoms/ButtonAtom';
 
 interface UserProfile {
   name: string;
@@ -81,9 +82,9 @@ const ProfilePage = () => {
               margin="normal"
               onChange={(e) => setUserProfile({ ...userProfile, senha: e.target.value })}
             />
-            <Button variant="contained" color="primary" type="submit" className="save-button">
+            <ButtonAtom variant="contained" type="submit" className="save-button">
               Salvar
-            </Button>
+            </ButtonAtom>
           </form>
         </CardContent>
       </Card>

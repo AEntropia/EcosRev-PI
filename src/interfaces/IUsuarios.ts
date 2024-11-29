@@ -1,8 +1,9 @@
 export interface IUsuarios {
-  id?: number;
-  name: string;
+  _id?: string;
+  nome: string;
   email: string;
-  pass: string;
-  points: number;
-  type: string;
+  senha: string;
+  tipo: string;
+  pontos: string;
+  ativo: boolean;
 }

@@ -17,6 +17,17 @@ const theme = createTheme({
   typography: {
     fontFamily: "'Poppins', sans-serif", // Define a fonte padrão
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          "&.MuiButton-outlined:hover": {
+            backgroundColor: "#E9F7C7 ", // Hover mais forte para todos os botões
+          },
+        },
+      },
+    },
+  },
 });
 
 export default theme;

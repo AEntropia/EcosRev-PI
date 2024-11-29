@@ -1,7 +1,8 @@
 interface IRow {
-  id: number;
-  name: string;
-  address: string;
-  points: number;
-  qtd: number;
+  _id: string;
+  data: string;
+  nome: string;
+  endereco: string;
+  pontos: number;
+  quantidade: number;
 }

@@ -2,29 +2,34 @@
 
 import { IBeneficios } from "@/interfaces/IBeneficios";
 import { BeneficioEditValidator } from "@/validators/BeneficioEditValidator";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import axios from "axios";
 import Layout from "@/components/UI/organisms/Layout";
-import router, { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { benefitsService } from "../../../../routes/benefitRoute";
+import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
+import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 
 const CadastroTemplate: React.FC = () => {
+  
   const formik = useFormik<IBeneficios>({
     initialValues: {
-      name: "",
-      address: "",
-      points: 0,
-      qtd: 0,
+      data: "",
+      nome: "",
+      endereco: "",
+      pontos: 0,
+      quantidade: 0,
     },
     validationSchema: BeneficioEditValidator,
     onSubmit: async (values) => {
+  
       try {
-        const response = await axios.post("/api/beneficios", values); // Altere a URL conforme necessário
-        console.log("Cadastro realizado com sucesso:", response.data);
-        // Aqui você pode redirecionar ou exibir uma mensagem de sucesso
+        const response = benefitsService.createBenefit(values);
+        console.log("Cadastro realizado com sucesso:", response);
+        alert("Cadastro realizado com sucesso!");
       } catch (error) {
         console.error("Erro ao cadastrar benefício:", error);
-        // Exibir uma mensagem de erro, se necessário
+        alert("Erro ao cadastrar benefício, verifique com o suporte");
       }
     },
   });
@@ -34,9 +39,8 @@ const CadastroTemplate: React.FC = () => {
   const router = useRouter();
 
   const handleCancel = () => {
-    router.push("/home"); // Redireciona para a página principal
+    router.push("/home");
   };
-
 
   return (
     <Layout>
@@ -58,55 +62,73 @@ const CadastroTemplate: React.FC = () => {
 
         <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
           <TextField
-            name="name"
+            name="nome"
             label="Nome"
             fullWidth
             margin="normal"
-            value={values.name}
+            value={values.nome}
             onChange={handleChange}
-            error={!!errors.name}
-            helperText={errors.name}
+            error={!!errors.nome}
+            helperText={errors.nome}
           />
           <TextField
-            name="address"
+            name="data"
+            label="Data"
+            fullWidth
+            margin="normal"
+            type="date" 
+            value={values.data}
+            onChange={handleChange}
+            error={!!errors.data }
+            helperText={errors.data }
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            name="endereco"
             label="Endereço"
             fullWidth
             margin="normal"
-            value={values.address}
+            value={values.endereco}
             onChange={handleChange}
-            error={!!errors.address}
-            helperText={errors.address}
+            error={!!errors.endereco}
+            helperText={errors.endereco}
           />
           <TextField
-            name="points"
+            name="pontos"
             label="Pontos"
             fullWidth
             margin="normal"
             type="number"
-            value={values.points}
+            value={values.pontos}
             onChange={handleChange}
-            error={!!errors.points}
-            helperText={errors.points}
+            error={!!errors.pontos}
+            helperText={errors.pontos}
           />
           <TextField
-            name="qtd"
+            name="quantidade"
             label="Quantidade"
             fullWidth
             margin="normal"
             type="number"
-            value={values.qtd}
+            value={values.quantidade}
             onChange={handleChange}
-            error={!!errors.qtd}
-            helperText={errors.qtd}
+            error={!!errors.quantidade}
+            helperText={errors.quantidade}
           />
-          
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-            <Button variant="outlined" color="secondary" onClick={handleCancel}>
+
+          <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 3, gap: 2 }}>
+            <Button variant="outlined" color="primary"  onClick={handleCancel}
+            sx={{ 
+              boxShadow: 3,
+            }}
+           >
               Cancelar
             </Button>
-            <Button variant="contained" color="primary" type="submit">
+            <ButtonAtom variant="contained" type="submit">
               Cadastrar
-            </Button>
+            </ButtonAtom>
           </Box>
         </Box>
       </Box>
@@ -114,4 +136,4 @@ const CadastroTemplate: React.FC = () => {
   );
 };
 
-export default CadastroTemplate;
+export default withAdminProtection(CadastroTemplate);

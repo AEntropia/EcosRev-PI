@@ -4,25 +4,25 @@ import React, { useState } from "react";
 import { Box, Container, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
-import axios from "axios";
 import Header from "../../components/UI/molecules/Header";
 import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 import { FormTextField } from "@/components/UI/atoms/FormTextField";
 import backgroundRoadImage from "../../../public/images/roadImg.jpeg";
 import { AuthTemplate } from "@/components/templates/auth/AuthTemplate";
+import { userService } from "../../../routes/userRoute";
 
 interface SignupData {
-  name: string;
+  nome: string;
   email: string;
-  password: string;
+  senha: string;
   confirmPassword: string;
 }
 
 const Signup: React.FC = () => {
   const [formData, setFormData] = useState<SignupData>({
-    name: "",
+    nome: "",
     email: "",
-    password: "",
+    senha: "",
     confirmPassword: "",
   });
 
@@ -37,16 +37,16 @@ const Signup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.senha !== formData.confirmPassword) {
       setError("As senhas não coincidem!");
       return;
     }
-
+    const { confirmPassword, ...dataToSend } = formData
     try {
-      const response = await axios.post("http://localhost:5000/api/signup", formData);
+      const response = userService.createUser(dataToSend);
       setSuccess("Cadastro realizado com sucesso!");
-      setFormData({ name: "", email: "", password: "", confirmPassword: "" });
-      router.push("/login");
+      setFormData({ nome: "", email: "", senha: "", confirmPassword: "" });
+      router.push("");
     } catch (error) {
       setError("Erro ao cadastrar usuário!");
     }
@@ -76,12 +76,20 @@ const Signup: React.FC = () => {
             flexDirection: "column",
             alignItems: "center",
             width: "100%",
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
             borderRadius: "10px",
             padding: 4,
           }}
         >
-          <Typography variant="h5" color="primary" gutterBottom>
+          <Typography
+            variant="h5"
+            color="primary"
+            gutterBottoM
+            sx={{
+              textShadow: "2px 2px 4px rgba(255, 255, 255, 1)", 
+              color: "primary.main",
+            }}
+          >
             Cadastro
           </Typography>
 
@@ -91,8 +99,8 @@ const Signup: React.FC = () => {
               label="Nome"
               variant="outlined"
               fullWidth
-              name="name"
-              value={formData.name}
+              name="nome"
+              value={formData.nome}
               onChange={handleChange}
               required
             />
@@ -110,9 +118,9 @@ const Signup: React.FC = () => {
               label="Senha"
               variant="outlined"
               fullWidth
-              name="password"
+              name="senha"
               type="password"
-              value={formData.password}
+              value={formData.senha}
               onChange={handleChange}
               required
             />
