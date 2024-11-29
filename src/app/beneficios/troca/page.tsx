@@ -1,7 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Typography, Box, Button } from "@mui/material";
+import { 
+  Container, 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow, 
+  Paper, 
+  Checkbox, 
+  Typography, 
+  Box, 
+  Modal 
+} from "@mui/material";
 import Layout from "@/components/UI/organisms/Layout";
 import { benefitsService } from "../../../../routes/benefitRoute";
 import { userService } from "../../../../routes/userRoute";
@@ -65,12 +78,12 @@ const Beneficios = () => {
 
   useEffect(() => {
     const fetchLoggedUser = async () => {
-      const response =  await userService.getLoggedUser();
+      const response = await userService.getLoggedUser();
       setPoints(Number(response[0].pontos))
     };
 
     const fetchBeneficios = async () => {
-      const response =  await benefitsService.getAllBenefits();
+      const response = await benefitsService.getAllBenefits();
       const beneficios = response.map((beneficio: any) => ({
         _id: beneficio._id,
         data: beneficio.data,
@@ -94,26 +107,32 @@ const Beneficios = () => {
 
   return (
     <Layout>
-      <Container sx={{ paddingTop: 4 }}>
+      <Container sx={{ position: 'relative', paddingTop: 4 }}>
         <SelectableTable rows={rows} onRowSelect={handleRowSelect} />
         
-        {/* Condicionalmente renderiza o Box com o total de pontos, apenas se houverem itens selecionados */}
-        {selectedRows.length > 0 && (
+        <Modal 
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Box
             sx={{
+              position: 'absolute',
               display: "flex",
               flexDirection: "column",
               alignItems: "center", 
               justifyContent: "center", 
-              minHeight: "200px", 
               bgcolor: "background.paper",
               p: 4,
               borderRadius: 2,
               boxShadow: 24,
               width: "auto", 
               maxWidth: 500,
-              margin: "auto", 
-              mt: 4,
+              zIndex: 1300,
             }}
           >
             <Typography variant="h6">Total de Pontos Selecionados</Typography>
@@ -121,7 +140,7 @@ const Beneficios = () => {
               variant="body1"
               sx={{
                 mt: 2,
-                color: totalPoints > Points ? "red" : "inherit", // Fica vermelho se totalPoints > Points
+                color: totalPoints > Points ? "red" : "inherit",
               }}
             >
               {`Pontos Totais: ${totalPoints}`}
@@ -130,10 +149,9 @@ const Beneficios = () => {
               {`Seus pontos: ${Points}`}
             </Typography>
           
-            {/* Botão com margem para baixo */}
             <ButtonAtom
               variant="contained"
-              sx={{ mt: 4 }} // Ajuste a margem superior para distanciar o botão de "Seus pontos"
+              sx={{ mt: 4 }}
               onClick={async () => {
                 if (totalPoints > Points) {
                   alert("Você não tem pontos suficientes para realizar a troca.");
@@ -143,21 +161,18 @@ const Beneficios = () => {
                 try {
                   const updatedPoints = Points - totalPoints;
           
-                  // Atualizar pontos do usuário
                   await userService.updateUserPoints({ pontos: updatedPoints.toString() });
                   setPoints(updatedPoints);
           
-                  // Atualizar quantidade dos benefícios selecionados
                   for (const selected of selectedRows) {
                     if (selected.quantidade > 0) {
                       const updatedBenefit = {
                         ...selected,
-                        quantidade: selected.quantidade - 1, // Decrementa a quantidade
+                        quantidade: selected.quantidade - 1,
                       };
           
                       await benefitsService.updateBenefit(updatedBenefit);
           
-                      // Atualizar o estado local
                       setRows((prevRows) =>
                         prevRows.map((row) =>
                           row._id === updatedBenefit._id ? { ...row, quantidade: updatedBenefit.quantidade } : row
@@ -170,7 +185,6 @@ const Beneficios = () => {
           
                   alert("Troca realizada com sucesso!");
           
-                  // Limpar seleção e fechar modal
                   setTotalPoints(0);
                   setSelectedRows([]);
                   setModalOpen(false);
@@ -183,7 +197,7 @@ const Beneficios = () => {
               Trocar
             </ButtonAtom>
           </Box>
-        )}
+        </Modal>
       </Container>
     </Layout>
   );
