@@ -1,21 +1,21 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Container, TextField, Card, CardContent, CardHeader } from '@mui/material';
+import { Container, TextField, Card, CardContent, CardHeader, Grid, Button } from '@mui/material';
 import '../../style/Perfil.css';
 import Image from 'next/image';
 import userImage from "../../../public/images/userImg.png";
 import Layout from "@/components/UI/organisms/Layout";
 import ButtonAtom from '@/components/UI/atoms/ButtonAtom';
-
+import { useRouter } from 'next/navigation'; // Para redirecionar
 
 const PerfilPage = () => {
   const [userData, setUserData] = useState({
     nome: '',
     endereco: '',
-    senha: '',
     profileImage: ''
   });
+  const router = useRouter(); // Hook para navegação
 
   useEffect(() => {
     const preencherCamposPerfil = async () => {
@@ -28,7 +28,6 @@ const PerfilPage = () => {
         setUserData({
           nome: `${user.name.first} ${user.name.last}`,
           endereco: `${user.location.street.name}, ${user.location.street.number}`,
-          senha: 'senha123', // Placeholder
           profileImage: user.picture.large
         });
       } catch (error) {
@@ -46,10 +45,15 @@ const PerfilPage = () => {
     // Aqui você pode adicionar lógica para enviar os dados atualizados do perfil
   };
 
+  // Função para redirecionar à página de redefinição de senha
+  const alterarSenha = () => {
+    router.push('/passwordReset');
+  };
+
   return (
     <Layout>
       <Container sx={{ paddingTop: 4 }}>
-        <Card className="perfilCard" variant="outlined">
+        <Card className="perfilCard" variant="outlined" sx={{ boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.45)", }}>
           <CardHeader title="Perfil do Usuário" />
           <CardContent>
             <div className="imagemPerfil">
@@ -74,20 +78,33 @@ const PerfilPage = () => {
                 onChange={(e) => setUserData({ ...userData, endereco: e.target.value })}
                 required
               />
-              <TextField
-                label="Senha"
-                type="password"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={userData.senha}
-                onChange={(e) => setUserData({ ...userData, senha: e.target.value })}
-                required
-              />
-              {/* Substitua o botão padrão pelo ButtonAtom */}
-              <ButtonAtom type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }} children={undefined}>
-                Salvar
-              </ButtonAtom>
+              <Grid container spacing={2} sx={{ mt: 2 }}>
+                {/* Botão Alterar Senha */}
+                <Grid item xs={6}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                    sx={{ 
+                      boxShadow: 3,
+                    }}
+                    onClick={alterarSenha}
+                  >
+                    Alterar Senha
+                  </Button>
+                </Grid>
+                {/* Botão Salvar */}
+                <Grid item xs={6}>
+                  <ButtonAtom
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                  >
+                    Salvar
+                  </ButtonAtom>
+                </Grid>
+              </Grid>
             </form>
           </CardContent>
         </Card>

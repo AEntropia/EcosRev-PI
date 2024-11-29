@@ -16,8 +16,8 @@ const FormWrapper = styled(Box)({
   justifyContent: 'center',
   maxWidth: '400px',
   margin: 'auto',
-  padding: '32px', // Added padding for content spacing
-  width: '90%', // Added to ensure form doesn't stretch on larger screens
+  padding: '32px',
+  width: '90%', 
 });
 
 interface AuthFormProps {
