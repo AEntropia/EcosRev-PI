@@ -12,8 +12,10 @@ import {
   Paper, 
   Checkbox, 
   Typography, 
-  Box, 
-  Modal 
+  Box,
+  TablePagination,
+  useTheme,
+  useMediaQuery
 } from "@mui/material";
 import Layout from "@/components/UI/organisms/Layout";
 import { benefitsService } from "../../../../routes/benefitRoute";
@@ -27,6 +29,10 @@ interface SelectableTableProps {
 
 const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) => {
   const [selectedRows, setSelectedRows] = useState<IRow[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage] = useState(4);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleRowClick = (row: IRow) => {
     const isSelected = selectedRows.includes(row);
@@ -37,44 +43,90 @@ const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) 
     onRowSelect(newSelectedRows);
   };
 
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const displayedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell padding="checkbox"></TableCell>
-            <TableCell>Nome</TableCell>
-            <TableCell>Data</TableCell>
-            <TableCell>Endereço</TableCell>
-            <TableCell>Pontos</TableCell>
-            <TableCell>Quantidade</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row._id} onClick={() => handleRowClick(row)} hover>
-              <TableCell padding="checkbox">
-                <Checkbox checked={selectedRows.includes(row)} />
-              </TableCell>
-              <TableCell>{row.nome}</TableCell>
-              <TableCell>{row.data}</TableCell>
-              <TableCell>{row.endereco}</TableCell>
-              <TableCell>{row.pontos}</TableCell>
-              <TableCell>{row.quantidade}</TableCell>
+    <>
+      <TableContainer component={Paper} sx={{ maxHeight: isMobile ? 'calc(100vh - 300px)' : 400 }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell 
+                padding="checkbox"
+                sx={{ 
+                  bgcolor: 'background.paper',
+                  borderBottom: 1,
+                  borderColor: 'divider'
+                }}
+              ></TableCell>
+              <TableCell sx={{ 
+                bgcolor: 'background.paper',
+                borderBottom: 1,
+                borderColor: 'divider'
+              }}>Nome</TableCell>
+              <TableCell sx={{ 
+                bgcolor: 'background.paper',
+                borderBottom: 1,
+                borderColor: 'divider'
+              }}>Data</TableCell>
+              {!isMobile && (
+                <TableCell sx={{ 
+                  bgcolor: 'background.paper',
+                  borderBottom: 1,
+                  borderColor: 'divider'
+                }}>Endereço</TableCell>
+              )}
+              <TableCell sx={{ 
+                bgcolor: 'background.paper',
+                borderBottom: 1,
+                borderColor: 'divider'
+              }}>Pontos</TableCell>
+              <TableCell sx={{ 
+                bgcolor: 'background.paper',
+                borderBottom: 1,
+                borderColor: 'divider'
+              }}>Quantidade</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {displayedRows.map((row) => (
+              <TableRow key={row._id} onClick={() => handleRowClick(row)} hover>
+                <TableCell padding="checkbox">
+                  <Checkbox checked={selectedRows.includes(row)} />
+                </TableCell>
+                <TableCell>{row.nome}</TableCell>
+                <TableCell>{row.data}</TableCell>
+                {!isMobile && <TableCell>{row.endereco}</TableCell>}
+                <TableCell>{row.pontos}</TableCell>
+                <TableCell>{row.quantidade}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <TablePagination
+        rowsPerPageOptions={[4]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+      />
+    </>
   );
 };
 
 const Beneficios = () => {
   const [rows, setRows] = useState<IRow[]>([]);
   const [selectedRows, setSelectedRows] = useState<IRow[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
   const [Points, setPoints] = useState(0);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchLoggedUser = async () => {
@@ -102,102 +154,99 @@ const Beneficios = () => {
   const handleRowSelect = (selected: IRow[]) => {
     setSelectedRows(selected);
     setTotalPoints(selected.reduce((sum, row) => sum + Number(row.pontos), 0));
-    setModalOpen(true);
+  };
+
+  const handleExchange = async () => {
+    if (totalPoints > Points) {
+      alert("Você não tem pontos suficientes para realizar a troca.");
+      return;
+    }
+
+    try {
+      const updatedPoints = Points - totalPoints;
+
+      await userService.updateUserPoints({ pontos: updatedPoints.toString() });
+      setPoints(updatedPoints);
+
+      for (const selected of selectedRows) {
+        if (selected.quantidade > 0) {
+          const updatedBenefit = {
+            ...selected,
+            quantidade: selected.quantidade - 1,
+          };
+
+          await benefitsService.updateBenefit(updatedBenefit);
+
+          setRows((prevRows) =>
+            prevRows.map((row) =>
+              row._id === updatedBenefit._id ? { ...row, quantidade: updatedBenefit.quantidade } : row
+            )
+          );
+        } else {
+          alert(`O benefício ${selected.nome} está sem estoque.`);
+        }
+      }
+
+      alert("Troca realizada com sucesso!");
+
+      setTotalPoints(0);
+      setSelectedRows([]);
+    } catch (error) {
+      console.error("Erro ao realizar troca:", error);
+      alert("Erro ao realizar a troca. Tente novamente.");
+    }
   };
 
   return (
     <Layout>
-      <Container sx={{ position: 'relative', paddingTop: 4 }}>
+      <Container sx={{ 
+        paddingTop: 4, 
+        paddingBottom: 4,
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: 3,
+        minHeight: '100vh'
+      }}>
         <SelectableTable rows={rows} onRowSelect={handleRowSelect} />
         
-        <Modal 
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          sx={{
+        <Box 
+          sx={{ 
+            width: '100%',
+            maxWidth: 300,
+            bgcolor: 'background.paper',
+            boxShadow: 3,
+            py: 3,
+            px: 3,
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
+            borderRadius: 2,
+            mx: 'auto',
+            mt: 'auto'
           }}
         >
-          <Box
-            sx={{
-              position: 'absolute',
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center", 
-              justifyContent: "center", 
-              bgcolor: "background.paper",
-              p: 4,
-              borderRadius: 2,
-              boxShadow: 24,
-              width: "auto", 
-              maxWidth: 500,
-              zIndex: 1300,
-            }}
-          >
-            <Typography variant="h6">Total de Pontos Selecionados</Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                mt: 2,
-                color: totalPoints > Points ? "red" : "inherit",
-              }}
-            >
+          <Box sx={{ textAlign: 'center', mb: 2 }}>
+            <Typography variant="body1">
               {`Pontos Totais: ${totalPoints}`}
             </Typography>
-            <Typography variant="body1" sx={{ mt: 2 }}>
+            <Typography 
+              variant="body1" 
+              color={totalPoints > Points ? "error" : "inherit"}
+              sx={{ mb: 2 }}
+            >
               {`Seus pontos: ${Points}`}
             </Typography>
-          
-            <ButtonAtom
-              variant="contained"
-              sx={{ mt: 4 }}
-              onClick={async () => {
-                if (totalPoints > Points) {
-                  alert("Você não tem pontos suficientes para realizar a troca.");
-                  return;
-                }
-          
-                try {
-                  const updatedPoints = Points - totalPoints;
-          
-                  await userService.updateUserPoints({ pontos: updatedPoints.toString() });
-                  setPoints(updatedPoints);
-          
-                  for (const selected of selectedRows) {
-                    if (selected.quantidade > 0) {
-                      const updatedBenefit = {
-                        ...selected,
-                        quantidade: selected.quantidade - 1,
-                      };
-          
-                      await benefitsService.updateBenefit(updatedBenefit);
-          
-                      setRows((prevRows) =>
-                        prevRows.map((row) =>
-                          row._id === updatedBenefit._id ? { ...row, quantidade: updatedBenefit.quantidade } : row
-                        )
-                      );
-                    } else {
-                      alert(`O benefício ${selected.nome} está sem estoque.`);
-                    }
-                  }
-          
-                  alert("Troca realizada com sucesso!");
-          
-                  setTotalPoints(0);
-                  setSelectedRows([]);
-                  setModalOpen(false);
-                } catch (error) {
-                  console.error("Erro ao realizar troca:", error);
-                  alert("Erro ao realizar a troca. Tente novamente.");
-                }
-              }}
-            >
-              Trocar
-            </ButtonAtom>
           </Box>
-        </Modal>
+          
+          <ButtonAtom
+            variant="contained"
+            disabled={selectedRows.length === 0 || totalPoints > Points}
+            onClick={handleExchange}
+          >
+            Trocar
+          </ButtonAtom>
+        </Box>
       </Container>
     </Layout>
   );

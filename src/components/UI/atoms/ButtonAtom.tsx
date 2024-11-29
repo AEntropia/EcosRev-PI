@@ -8,6 +8,7 @@ interface ButtonAtomProps {
   variant?: "text" | "outlined" | "contained";
   color?: "primary" | "secondary" | "success" | "error" | "info" | "warning";
   sx?: object;
+  disabled?: boolean;
   onClick?: () => void;
 }
 

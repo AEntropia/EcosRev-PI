@@ -7,7 +7,7 @@ import Image from 'next/image';
 import userImage from "../../../public/images/userImg.png";
 import Layout from "@/components/UI/organisms/Layout";
 import ButtonAtom from '@/components/UI/atoms/ButtonAtom';
-import { useRouter } from 'next/navigation'; // Para redirecionar
+import { useRouter } from 'next/navigation';
 
 const PerfilPage = () => {
   const [userData, setUserData] = useState({
@@ -15,7 +15,7 @@ const PerfilPage = () => {
     endereco: '',
     profileImage: ''
   });
-  const router = useRouter(); // Hook para navegação
+  const router = useRouter();
 
   useEffect(() => {
     const preencherCamposPerfil = async () => {
@@ -24,7 +24,6 @@ const PerfilPage = () => {
         const data = await response.json();
         const user = data.results[0];
 
-        // Preenchendo os dados do perfil
         setUserData({
           nome: `${user.name.first} ${user.name.last}`,
           endereco: `${user.location.street.name}, ${user.location.street.number}`,
@@ -38,14 +37,11 @@ const PerfilPage = () => {
     preencherCamposPerfil();
   }, []);
 
-  // Função que simula o envio do formulário
   const enviarFormulario = (event: React.FormEvent) => {
     event.preventDefault();
     alert("Alterações salvas com sucesso!");
-    // Aqui você pode adicionar lógica para enviar os dados atualizados do perfil
   };
 
-  // Função para redirecionar à página de redefinição de senha
   const alterarSenha = () => {
     router.push('/passwordReset');
   };
@@ -53,7 +49,7 @@ const PerfilPage = () => {
   return (
     <Layout>
       <Container sx={{ paddingTop: 4 }}>
-        <Card className="perfilCard" variant="outlined" sx={{ boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.45)", }}>
+        <Card className="perfilCard" variant="outlined" sx={{ boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.45)" }}>
           <CardHeader title="Perfil do Usuário" />
           <CardContent>
             <div className="imagemPerfil">
@@ -78,28 +74,39 @@ const PerfilPage = () => {
                 onChange={(e) => setUserData({ ...userData, endereco: e.target.value })}
                 required
               />
-              <Grid container spacing={2} sx={{ mt: 2 }}>
-                {/* Botão Alterar Senha */}
-                <Grid item xs={6}>
+              <Grid 
+                container 
+                spacing={{ xs: 2, sm: 2 }} 
+                sx={{ 
+                  mt: 2,
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  '& .MuiGrid-item': {
+                    width: { xs: '100%', sm: '50%' },
+                    paddingTop: { xs: '16px !important' }
+                  }
+                }}
+              >
+                <Grid item>
                   <Button
                     variant="outlined"
                     color="primary"
                     fullWidth
                     sx={{ 
                       boxShadow: 3,
+                      height: '40px'
                     }}
                     onClick={alterarSenha}
                   >
                     Alterar Senha
                   </Button>
                 </Grid>
-                {/* Botão Salvar */}
-                <Grid item xs={6}>
+                <Grid item>
                   <ButtonAtom
                     type="submit"
                     variant="contained"
                     color="primary"
                     fullWidth
+                    sx={{ height: '40px' }}
                   >
                     Salvar
                   </ButtonAtom>
