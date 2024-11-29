@@ -15,5 +15,9 @@ export const BeneficioEditValidator = () => {
       .min(0.01, minValue)
       .required(requiredField),
     quantidade: Yup.number().typeError(numericField).min(0.01, minValue),
+    // Adicionando a validação da data para ser no futuro
+    data: Yup.date()
+      .required(requiredField)
+      .min(new Date(), "A data deve ser no futuro"), // A data precisa ser no futuro
   });
 };

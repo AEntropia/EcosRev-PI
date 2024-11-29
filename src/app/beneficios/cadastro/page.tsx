@@ -4,14 +4,14 @@ import { IBeneficios } from "@/interfaces/IBeneficios";
 import { BeneficioEditValidator } from "@/validators/BeneficioEditValidator";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import axios from "axios";
 import Layout from "@/components/UI/organisms/Layout";
-import router, { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { benefitsService } from "../../../../routes/benefitRoute";
 import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 
 const CadastroTemplate: React.FC = () => {
+  
   const formik = useFormik<IBeneficios>({
     initialValues: {
       data: "",
@@ -22,14 +22,14 @@ const CadastroTemplate: React.FC = () => {
     },
     validationSchema: BeneficioEditValidator,
     onSubmit: async (values) => {
-      console.log(values);
+  
       try {
-        const response = benefitsService.createBenefit(values); // Altere a URL conforme necessário
+        const response = benefitsService.createBenefit(values);
         console.log("Cadastro realizado com sucesso:", response);
-        // Aqui você pode redirecionar ou exibir uma mensagem de sucesso
+        alert("Cadastro realizado com sucesso!");
       } catch (error) {
         console.error("Erro ao cadastrar benefício:", error);
-        // Exibir uma mensagem de erro, se necessário
+        alert("Erro ao cadastrar benefício, verifique com o suporte");
       }
     },
   });
@@ -39,7 +39,7 @@ const CadastroTemplate: React.FC = () => {
   const router = useRouter();
 
   const handleCancel = () => {
-    router.push("/home"); // Redireciona para a página principal
+    router.push("/home");
   };
 
   return (
@@ -76,13 +76,13 @@ const CadastroTemplate: React.FC = () => {
             label="Data"
             fullWidth
             margin="normal"
-            type="date" // Define o tipo como "date"
+            type="date" 
             value={values.data}
             onChange={handleChange}
-            error={!!errors.data}
-            helperText={errors.data}
+            error={!!errors.data }
+            helperText={errors.data }
             InputLabelProps={{
-              shrink: true, // Garante que o label não sobreponha o valor
+              shrink: true,
             }}
           />
           <TextField
