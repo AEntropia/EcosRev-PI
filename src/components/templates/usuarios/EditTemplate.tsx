@@ -2,13 +2,15 @@
 
 import { IUsuarios } from "@/interfaces/IUsuarios";
 import { UsuarioEditValidator } from "@/validators/UsuarioEditValidator";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import { useEffect } from "react";
 import { userService } from "../../../../routes/userRoute";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "../../../../themes/userTheme";
 import { useRouter } from "next/navigation";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 
 interface EditTemplateProps {
   usuario?: IUsuarios;
@@ -86,16 +88,28 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ usuario }) => {
           />
 
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-            <Button variant="outlined" color="secondary" onClick={() => router.push("/usuarios")}>
-              Cancelar
-            </Button>
-            <Button variant="contained" color="primary" type="submit">
-              Atualizar
-            </Button>
-            <Button variant="contained" color="primary" onClick={() => {
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <Button variant="outlined" color="primary" 
+                sx={{
+                  boxShadow: 3, 
+                }} 
+                onClick={() => router.push("/usuarios")}>
+                Cancelar
+              </Button>
+              <ButtonAtom variant="contained" color="primary" type="submit">
+                Atualizar
+              </ButtonAtom>
+            </Box>
+            <Button variant="outlined" 
+              sx={{
+                boxShadow: 3, 
+              }} 
+              onClick={()  => {
               userService.deleteUser(usuario?._id)
-              router.push("/usuarios")}}>
-            Remover
+              router.push("/usuarios");
+              }}
+              >
+                <DeleteIcon />
             </Button>
           </Box>
         </Box>

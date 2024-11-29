@@ -2,13 +2,14 @@
 
 import { IBeneficios } from "@/interfaces/IBeneficios";
 import { BeneficioEditValidator } from "@/validators/BeneficioEditValidator";
-import { Box, Button, Container, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import axios from "axios";
 import Layout from "@/components/UI/organisms/Layout";
 import router, { useRouter } from "next/navigation";
 import { benefitsService } from "../../../../routes/benefitRoute";
 import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
+import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 
 const CadastroTemplate: React.FC = () => {
   const formik = useFormik<IBeneficios>({
@@ -117,13 +118,17 @@ const CadastroTemplate: React.FC = () => {
             helperText={errors.quantidade}
           />
 
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-            <Button variant="outlined" color="secondary" onClick={handleCancel}>
+          <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 3, gap: 2 }}>
+            <Button variant="outlined" color="primary"  onClick={handleCancel}
+            sx={{ 
+              boxShadow: 3,
+            }}
+           >
               Cancelar
             </Button>
-            <Button variant="contained" color="primary" type="submit">
+            <ButtonAtom variant="contained" type="submit">
               Cadastrar
-            </Button>
+            </ButtonAtom>
           </Box>
         </Box>
       </Box>

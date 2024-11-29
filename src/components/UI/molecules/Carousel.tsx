@@ -27,9 +27,9 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
     <Box
       sx={{
         width: "100%",
-        height: "500px",
+        height: "380px",
         position: "relative",
-        overflow: "hidden",
+        marginTop: "32px",
       }}
     >
       <Slider {...settings}>
@@ -39,7 +39,7 @@ const Carousel: React.FC<CarouselProps> = ({ slides }) => {
             sx={{
               position: "relative",
               width: "100%",
-              height: "500px",
+              height: "350px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

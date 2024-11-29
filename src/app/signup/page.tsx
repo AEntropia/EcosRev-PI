@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Box, Container, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
-import axios from "axios";
 import Header from "../../components/UI/molecules/Header";
 import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 import { FormTextField } from "@/components/UI/atoms/FormTextField";
@@ -77,12 +76,20 @@ const Signup: React.FC = () => {
             flexDirection: "column",
             alignItems: "center",
             width: "100%",
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
             borderRadius: "10px",
             padding: 4,
           }}
         >
-          <Typography variant="h5" color="primary" gutterBottom>
+          <Typography
+            variant="h5"
+            color="primary"
+            gutterBottoM
+            sx={{
+              textShadow: "2px 2px 4px rgba(255, 255, 255, 1)", 
+              color: "primary.main",
+            }}
+          >
             Cadastro
           </Typography>
 

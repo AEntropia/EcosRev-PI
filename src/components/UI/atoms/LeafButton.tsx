@@ -32,6 +32,7 @@ const LeafButton: React.FC<LeafButtonProps> = ({
         display: 'flex',
         alignItems: 'center',
         gap: 1,
+        boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.45)",
         ...props.sx
       }}
       {...props}

@@ -26,7 +26,10 @@ const ButtonAtom: React.FC<ButtonAtomProps> = ({
       fullWidth={fullWidth}
       variant={variant}
       color={color}
-      sx={sx}
+      sx={{
+        ...sx,
+        color: 'white',
+      }}
       onClick={onClick}
     >
       {children}

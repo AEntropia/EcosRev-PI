@@ -64,12 +64,19 @@ const PasswordRecovery: React.FC = () => {
             flexDirection: "column",
             alignItems: "center",
             width: "100%",
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
             borderRadius: "10px",
             padding: 4,
           }}
         >
-          <Typography variant="h5" color="primary" gutterBottom>
+          <Typography 
+            variant="h5" 
+            color="primary" 
+            gutterBottom
+            sx={{
+              textShadow: "2px 2px 4px rgba(255, 255, 255, 1)", 
+              color: "primary.main",
+            }}>
             Recuperação de Senha
           </Typography>
 

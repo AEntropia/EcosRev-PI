@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Modal, Typography, Box, Button } from "@mui/material";
+import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, Typography, Box, Button } from "@mui/material";
 import Layout from "@/components/UI/organisms/Layout";
-import { env } from "@/config/env";
 import { benefitsService } from "../../../../routes/benefitRoute";
 import { userService } from "../../../../routes/userRoute";
-import { IBeneficios } from "@/interfaces/IBeneficios";
-import { IUsuarios } from "@/interfaces/IUsuarios";
+import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
+
 interface SelectableTableProps {
   rows: IRow[];
   onRowSelect: (selectedRows: IRow[]) => void;
@@ -103,14 +101,19 @@ const Beneficios = () => {
         {selectedRows.length > 0 && (
           <Box
             sx={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center", 
+              justifyContent: "center", 
+              minHeight: "200px", 
               bgcolor: "background.paper",
               p: 4,
               borderRadius: 2,
               boxShadow: 24,
+              width: "auto", 
+              maxWidth: 500,
+              margin: "auto", 
+              mt: 4,
             }}
           >
             <Typography variant="h6">Total de Pontos Selecionados</Typography>
@@ -126,22 +129,24 @@ const Beneficios = () => {
             <Typography variant="body1" sx={{ mt: 2 }}>
               {`Seus pontos: ${Points}`}
             </Typography>
-            <Button
+          
+            {/* Botão com margem para baixo */}
+            <ButtonAtom
               variant="contained"
-              color="primary"
+              sx={{ mt: 4 }} // Ajuste a margem superior para distanciar o botão de "Seus pontos"
               onClick={async () => {
                 if (totalPoints > Points) {
                   alert("Você não tem pontos suficientes para realizar a troca.");
                   return;
                 }
-
+          
                 try {
                   const updatedPoints = Points - totalPoints;
-
+          
                   // Atualizar pontos do usuário
                   await userService.updateUserPoints({ pontos: updatedPoints.toString() });
                   setPoints(updatedPoints);
-
+          
                   // Atualizar quantidade dos benefícios selecionados
                   for (const selected of selectedRows) {
                     if (selected.quantidade > 0) {
@@ -149,9 +154,9 @@ const Beneficios = () => {
                         ...selected,
                         quantidade: selected.quantidade - 1, // Decrementa a quantidade
                       };
-
+          
                       await benefitsService.updateBenefit(updatedBenefit);
-
+          
                       // Atualizar o estado local
                       setRows((prevRows) =>
                         prevRows.map((row) =>
@@ -162,9 +167,9 @@ const Beneficios = () => {
                       alert(`O benefício ${selected.nome} está sem estoque.`);
                     }
                   }
-
+          
                   alert("Troca realizada com sucesso!");
-
+          
                   // Limpar seleção e fechar modal
                   setTotalPoints(0);
                   setSelectedRows([]);
@@ -176,9 +181,8 @@ const Beneficios = () => {
               }}
             >
               Trocar
-            </Button>
-
-        </Box>
+            </ButtonAtom>
+          </Box>
         )}
       </Container>
     </Layout>

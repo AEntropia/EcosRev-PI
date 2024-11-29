@@ -7,7 +7,6 @@ import { AuthForm } from "@/components/UI/molecules/AuthForm";
 import { AuthTemplate } from "@/components/templates/auth/AuthTemplate";
 import backgroundImage from "../../public/images/loginImg.jpg";
 import Header from "@/components/UI/molecules/Header";
-import { Button } from "@mui/material";
 
 // import { useAuth } from "../../src/context/AuthContext";
 // deixei o authprovider comentado enquanto aguarda a conexao com api

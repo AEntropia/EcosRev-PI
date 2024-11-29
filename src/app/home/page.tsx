@@ -62,7 +62,7 @@ export default function Home() {
 function Introduction() {
   return (
     <Box
-      sx={{ backgroundColor: "#f9f9f9", padding: "60px 0" }}
+      sx={{ backgroundColor: "#f9f9f9", padding: "16px 60px 60px" }}
       textAlign="center"
     >
       <Container>

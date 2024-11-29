@@ -1,12 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Container, Button, TextField, Card, CardContent, CardHeader } from '@mui/material';
+import { Container, TextField, Card, CardContent, CardHeader } from '@mui/material';
 import '../../style/Perfil.css';
 import Image from 'next/image';
 import userImage from "../../../public/images/userImg.png";
 import Layout from "@/components/UI/organisms/Layout";
-import { ThemeProvider } from "@emotion/react";
+import ButtonAtom from '@/components/UI/atoms/ButtonAtom';
+
 
 const PerfilPage = () => {
   const [userData, setUserData] = useState({
@@ -16,7 +17,7 @@ const PerfilPage = () => {
     profileImage: ''
   });
 
-   useEffect(() => {
+  useEffect(() => {
     const preencherCamposPerfil = async () => {
       try {
         const response = await fetch('https://randomuser.me/api/');
@@ -47,7 +48,8 @@ const PerfilPage = () => {
 
   return (
     <Layout>
-      <Container sx={{ paddingTop: 4 }}>          <Card className="perfilCard" variant="outlined">
+      <Container sx={{ paddingTop: 4 }}>
+        <Card className="perfilCard" variant="outlined">
           <CardHeader title="Perfil do Usuário" />
           <CardContent>
             <div className="imagemPerfil">
@@ -82,9 +84,10 @@ const PerfilPage = () => {
                 onChange={(e) => setUserData({ ...userData, senha: e.target.value })}
                 required
               />
-              <Button type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }}>
+              {/* Substitua o botão padrão pelo ButtonAtom */}
+              <ButtonAtom type="submit" variant="contained" color="primary" fullWidth sx={{ mt: 2 }} children={undefined}>
                 Salvar
-              </Button>
+              </ButtonAtom>
             </form>
           </CardContent>
         </Card>
