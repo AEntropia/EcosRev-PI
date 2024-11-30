@@ -3,8 +3,18 @@ import Home from '@/app/page'; // O caminho pode ser ajustado conforme necessár
 import { login, isAdmin } from '@/app/login_api';
 import { useRouter } from 'next/navigation';
 
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
+
 // Mock da função login
-jest.mock('./login_api', () => ({
+jest.mock('@/app/login_api', () => ({
   login: jest.fn(),
   isAdmin: jest.fn(),
 }));

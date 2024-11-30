@@ -3,6 +3,16 @@ import "@testing-library/jest-dom";
 import Home from "../../../src/app/home/page"; // Atualize o caminho conforme necessário
 import { ReactNode } from "react";
 
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
+
 // Mock do componente Layout
 jest.mock("@/components/UI/organisms/Layout", () => ({
   __esModule: true,

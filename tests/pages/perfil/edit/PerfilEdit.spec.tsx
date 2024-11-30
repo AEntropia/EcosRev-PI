@@ -3,6 +3,16 @@ import ProfilePage from '../../../../src/app/perfil/edit/[slug]/page';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
+
 // Configurando o MSW para simular a API
 const server = setupServer(
   rest.get('https://randomuser.me/api/', (req, res, ctx) => {

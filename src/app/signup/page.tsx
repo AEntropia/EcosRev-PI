@@ -84,7 +84,7 @@ const Signup: React.FC = () => {
           <Typography
             variant="h5"
             color="primary"
-            gutterBottoM
+            gutterBottom
             sx={{
               textShadow: "2px 2px 4px rgba(255, 255, 255, 1)", 
               color: "primary.main",
