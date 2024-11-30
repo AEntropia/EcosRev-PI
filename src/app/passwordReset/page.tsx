@@ -8,6 +8,7 @@ import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 import { FormTextField } from "@/components/UI/atoms/FormTextField";
 import backgroundRoadImage from "../../../public/images/roadImg.jpeg";
 import { AuthTemplate } from "@/components/templates/auth/AuthTemplate";
+import Link from "next/link";
 
 interface PasswordResetData {
   password: string;
@@ -122,12 +123,25 @@ const PasswordReset: React.FC = () => {
 
             <ButtonAtom
               type="submit"
-              fullWidth
-              sx={{ marginTop: 3, marginBottom: 2 }}
+              sx={{ 
+                mt: 3, 
+                mb: 2, 
+                display: "block",
+                marginLeft: "auto",
+                marginRight: "auto",  }}
             >
               Redefinir Senha
             </ButtonAtom>
           </Box>
+
+          <Box sx={{ marginTop: 2 }}>
+            <Link href="/" passHref>
+              <Typography variant="body2" sx={{ color: "primary.main" }}>
+                Voltar para Login
+              </Typography>
+            </Link>
+          </Box>
+
         </Box>
       </Container>
     </AuthTemplate>

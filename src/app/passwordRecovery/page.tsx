@@ -97,8 +97,12 @@ const PasswordRecovery: React.FC = () => {
 
             <ButtonAtom
               type="submit"
-              fullWidth
-              sx={{ marginTop: 3, marginBottom: 2 }}
+              sx={{ 
+                mt: 3, 
+                mb: 2, 
+                display: "block",
+                marginLeft: "auto",
+                marginRight: "auto",  }}
             >
               Enviar Link de Recuperação
             </ButtonAtom>

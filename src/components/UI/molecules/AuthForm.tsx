@@ -100,7 +100,6 @@ export const AuthForm = ({
 
           <ButtonAtom
             type="submit"
-            fullWidth
             sx={{ mt: 3, mb: 2 }}
           >
             {isLogin ? 'Login' : 'Cadastrar'}
