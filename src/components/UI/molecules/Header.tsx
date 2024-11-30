@@ -63,79 +63,70 @@ const Header = () => {
         boxShadow: `0px 1px 1px rgba(0, 0, 0, 0.5)`,
       }}
     >
-      <Box display="flex" alignItems="center" p={3} width="100%">
+      {/* Menu Hamburguer - à esquerda */}
+      {!isSpecialPage && (
+        <IconButton
+          sx={{
+            color: "primary.main",
+            mr: 2, // Espaço entre o ícone e o logo
+          }}
+          onClick={() => setIsDrawerOpen(true)}
+        >
+          <MenuIcon />
+        </IconButton>
+      )}
+  
+      {/* Logo - no centro */}
+      <Box display="flex" alignItems="center" flexShrink={0}>
         <Image src={logoSvg} alt="EcosRev Logo" width={200} height={112} priority />
-
-        {!isSpecialPage && (
-          <>
-            <Box
-              sx={{
-                display: { xs: "none", md: "flex" },
-                ml: 2,
-              }}
-            >
-              {menuItems.map((item) => (
-                <Button
-                  key={item.label}
-                  onClick={() => handleMenuClick(item.path)}
-                  sx={{
-                    mx: 1,
-                    color: "primary.main",
-                    "&:hover": {
-                      backgroundColor: "#E9F7C7",
-                    },
-                    "&::after": {
-                      content: '""',
-                      position: "absolute",
-                      width: "100%",
-                      height: "2px",
-                      bottom: 0,
-                      left: 0,
-                      backgroundColor: "primary.main",
-                      transform: "scaleX(0)",
-                      transition: "transform 0.3s ease-in-out",
-                    },
-                    "&:hover::after": {
-                      transform: "scaleX(1)",
-                    },
-                  }}
-                >
-                  {item.label}
-                </Button>
-              ))}
-            </Box>
-
-            <IconButton
-              sx={{ 
-                display: { xs: "flex", md: "none" }, 
-                ml: "auto",
-                color: "primary.main"
-              }}
-              onClick={() => setIsDrawerOpen(true)}
-            >
-              <MenuIcon />
-            </IconButton>
-          </>
-        )}
-
-        {!isSpecialPage && (
-          <Box display="flex" justifyContent="flex-end" flexGrow={1}>
-            <LeafButton
-              onClick={() => {
-                logout();
-                router.push("/");
-              }}
-              iconSrc={leafIcon}
-            >
-              Sair
-            </LeafButton>
-          </Box>
-        )}
       </Box>
-
-      <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+  
+      {/* Links da Navegação - ocultar em telas pequenas */}
+      {!isSpecialPage && (
+        <Box
+          sx={{
+            display: { xs: "none", md: "flex" }, // Mostrar links apenas em telas maiores
+            flexGrow: 1,
+            ml: 2,
+          }}
+        >
+          {menuItems.map((item) => (
+            <Button
+              key={item.label}
+              onClick={() => handleMenuClick(item.path)}
+              sx={{
+                mx: 1,
+                color: "primary.main",
+                "&:hover": {
+                  backgroundColor: "#E9F7C7",
+                },
+              }}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </Box>
+      )}
+  
+      {/* Botão Sair - à direita */}
+      {!isSpecialPage && (
+        <Box display="flex" justifyContent="flex-end" flexShrink={0} ml="auto" mr={3}>
+          <LeafButton
+            onClick={() => {
+              logout();
+              router.push("/");
+            }}
+            iconSrc={leafIcon}
+          >
+            Sair
+          </LeafButton>
+        </Box>
+      )}
+  
+      {/* Drawer no lado esquerdo (para dispositivos móveis) */}
+      <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <Box sx={{ width: 250 }}>
-          <IconButton 
+          <IconButton
             onClick={() => setIsDrawerOpen(false)}
             sx={{ color: "primary.main" }}
           >
@@ -143,15 +134,15 @@ const Header = () => {
           </IconButton>
           <List>
             {menuItems.map((item) => (
-              <ListItem 
-                button 
-                key={item.label} 
+              <ListItem
+                button
+                key={item.label}
                 onClick={() => handleMenuClick(item.path)}
                 sx={{
                   color: "primary.main",
                   "&:hover": {
                     backgroundColor: "#E9F7C7",
-                  }
+                  },
                 }}
               >
                 <ListItemText primary={item.label} />
@@ -162,6 +153,7 @@ const Header = () => {
       </Drawer>
     </Box>
   );
-};
+  
+};  
 
 export default Header;
