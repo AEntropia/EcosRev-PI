@@ -9,19 +9,15 @@ jest.mock("formik", () => ({
   useFormik: jest.fn(),
 }));
 
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(),
-}));
-
 jest.mock("../../../../routes/benefitRoute", () => ({
   benefitsService: {
     createBenefit: jest.fn(),
   },
 }));
 
-jest.mock("@/components/HOCS/withAdminProtection", () => (Component: React.FC) =>
-  jest.fn(() => <Component />)
-);
+jest.mock("@/components/HOCS/withAdminProtection", () => ({
+  withAdminProtection: jest.fn((Component) => Component), // Mock que retorna o componente diretamente
+}));
 
 describe("CadastroTemplate", () => {
   const mockPush = jest.fn();
@@ -67,7 +63,9 @@ describe("CadastroTemplate", () => {
   it("deve chamar a função onSubmit com os valores do formulário ao enviar", async () => {
     const mockCreateBenefit = jest.fn().mockResolvedValue("success");
 
-    (benefitsService.createBenefit as jest.Mock).mockImplementation(mockCreateBenefit);
+    (benefitsService.createBenefit as jest.Mock).mockImplementation(
+      mockCreateBenefit
+    );
 
     render(<CadastroTemplate />);
 
@@ -85,19 +83,37 @@ describe("CadastroTemplate", () => {
   });
 
   it("deve exibir um erro no console em caso de falha na criação do benefício", async () => {
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    const mockCreateBenefit = jest.fn().mockRejectedValue(new Error("Erro ao cadastrar"));
+    // Cria um espião para monitorar o console.error
+    const consoleSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
 
-    (benefitsService.createBenefit as jest.Mock).mockImplementation(mockCreateBenefit);
+    // Mock para a função que rejeita a promessa com erro
+    const mockCreateBenefit = jest
+      .fn()
+      .mockRejectedValue(new Error("Erro ao cadastrar"));
 
+    // Substitui a implementação do serviço com o mock
+    (benefitsService.createBenefit as jest.Mock).mockImplementation(
+      mockCreateBenefit
+    );
+
+    // Renderiza o componente
     render(<CadastroTemplate />);
 
+    // Aciona o envio do formulário
     fireEvent.click(screen.getByText("Cadastrar"));
 
+    // Aguarda até que o erro seja capturado
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Erro ao cadastrar benefício:", expect.any(Error));
+      // Verifica se o erro foi registrado no console
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Erro ao cadastrar benefício:",
+        expect.any(Error)
+      );
     });
 
+    // Restaura o espião
     consoleSpy.mockRestore();
   });
 });

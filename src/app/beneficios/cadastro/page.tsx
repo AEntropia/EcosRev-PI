@@ -11,7 +11,6 @@ import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 
 const CadastroTemplate: React.FC = () => {
-  
   const formik = useFormik<IBeneficios>({
     initialValues: {
       data: "",
@@ -22,9 +21,8 @@ const CadastroTemplate: React.FC = () => {
     },
     validationSchema: BeneficioEditValidator,
     onSubmit: async (values) => {
-  
       try {
-        const response = benefitsService.createBenefit(values);
+        const response = await benefitsService.createBenefit(values);
         console.log("Cadastro realizado com sucesso:", response);
         alert("Cadastro realizado com sucesso!");
       } catch (error) {
@@ -76,11 +74,11 @@ const CadastroTemplate: React.FC = () => {
             label="Data"
             fullWidth
             margin="normal"
-            type="date" 
+            type="date"
             value={values.data}
             onChange={handleChange}
-            error={!!errors.data }
-            helperText={errors.data }
+            error={!!errors.data}
+            helperText={errors.data}
             InputLabelProps={{
               shrink: true,
             }}
@@ -118,12 +116,22 @@ const CadastroTemplate: React.FC = () => {
             helperText={errors.quantidade}
           />
 
-          <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 3, gap: 2 }}>
-            <Button variant="outlined" color="primary"  onClick={handleCancel}
-            sx={{ 
-              boxShadow: 3,
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-start",
+              mt: 3,
+              gap: 2,
             }}
-           >
+          >
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleCancel}
+              sx={{
+                boxShadow: 3,
+              }}
+            >
               Cancelar
             </Button>
             <ButtonAtom variant="contained" type="submit">

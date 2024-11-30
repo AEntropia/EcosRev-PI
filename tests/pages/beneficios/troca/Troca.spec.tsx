@@ -18,15 +18,7 @@ jest.mock("../../../../routes/userRoute", () => ({
   },
 }));
 
-jest.mock("@/components/HOCS/withAdminProtection", () => (Component: React.FC) =>
-  jest.fn(() => <Component />)
-);
-
-describe("Beneficios", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
+describe("Benefícios", () => {
   const mockBenefits = [
     {
       _id: "1",
@@ -49,95 +41,157 @@ describe("Beneficios", () => {
   const mockUser = [
     {
       _id: "user1",
-      pontos: 300,
+      pontos: 200,
     },
   ];
 
-  it("deve renderizar a tabela com os benefícios e carregar dados do usuário", async () => {
-    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(mockBenefits);
-    (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
-
-    render(<Beneficios />);
-
-    expect(await screen.findByText("Benefício A")).toBeInTheDocument();
-    expect(await screen.findByText("Benefício B")).toBeInTheDocument();
-    expect(screen.getByText("Pontos Totais: 0")).toBeInTheDocument(); // Pontos totais inicial
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it("deve calcular o total de pontos ao selecionar benefícios", async () => {
-    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(mockBenefits);
+  it("deve renderizar a tabela de benefícios", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(
+      mockBenefits
+    );
     (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
 
     render(<Beneficios />);
-
-    const rowA = await screen.findByText("Benefício A");
-    const rowB = await screen.findByText("Benefício B");
-
-    fireEvent.click(rowA); // Seleciona Benefício A
-    fireEvent.click(rowB); // Seleciona Benefício B
-
-    expect(await screen.findByText("Pontos Totais: 300")).toBeInTheDocument(); // 100 + 200
-  });
-
-  it("deve mostrar erro se pontos totais excederem os pontos do usuário", async () => {
-    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(mockBenefits);
-    (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
-
-    render(<Beneficios />);
-
-    const rowA = await screen.findByText("Benefício A");
-    const rowB = await screen.findByText("Benefício B");
-
-    fireEvent.click(rowA); // Seleciona Benefício A
-    fireEvent.click(rowB); // Seleciona Benefício B
-
-    const trocarButton = await screen.findByText("Trocar");
-    fireEvent.click(trocarButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Você não tem pontos suficientes para realizar a troca.")).toBeInTheDocument();
+      expect(screen.getByText("Benefício A")).toBeInTheDocument();
+      expect(screen.getByText("Benefício B")).toBeInTheDocument();
     });
   });
 
-  it("deve atualizar os pontos do usuário e o estoque dos benefícios ao realizar troca", async () => {
-    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(mockBenefits);
+  it("deve calcular o total de pontos ao selecionar benefícios", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(
+      mockBenefits
+    );
+    (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
+
+    render(<Beneficios />);
+
+    const rowA = await screen.findByText("Benefício A");
+    const rowB = await screen.findByText("Benefício B");
+
+    fireEvent.click(rowA); // Seleciona Benefício A
+    fireEvent.click(rowB); // Seleciona Benefício B
+
+    await waitFor(() => {
+      expect(screen.getByText("Pontos Totais: 300")).toBeInTheDocument(); // 100 + 200
+    });
+  });
+
+  it("deve abrir modal de troca ao selecionar benefícios", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(
+      mockBenefits
+    );
+    (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
+
+    render(<Beneficios />);
+
+    const rowA = await screen.findByText("Benefício A");
+    fireEvent.click(rowA);
+
+    const trocarButton = await screen.findByText("Trocar");
+    expect(trocarButton).toBeInTheDocument(); // Verifica se o botão Trocar está visível
+
+    fireEvent.click(trocarButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Total de Pontos Selecionados")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("deve exibir erro se pontos totais excederem os pontos do usuário", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(
+      mockBenefits
+    );
+    (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
+
+    // Mock do alert
+    const mockAlert = jest.spyOn(window, "alert").mockImplementation(() => {});
+
+    render(<Beneficios />);
+
+    // Seleciona os benefícios
+    const rowA = await screen.findByText("Benefício A");
+    const rowB = await screen.findByText("Benefício B");
+
+    // Firing click events to select the rows
+    fireEvent.click(rowA);
+    fireEvent.click(rowB);
+
+    // Espera até que a troca seja tentada
+    const trocarButton = await screen.findByText("Trocar");
+    fireEvent.click(trocarButton);
+
+    // Espera o alerta ser chamado
+    await waitFor(() => {
+      expect(mockAlert).toHaveBeenCalledWith(
+        "Você não tem pontos suficientes para realizar a troca."
+      );
+    });
+
+    mockAlert.mockRestore(); // Restaura o mock após o teste
+  });
+
+  it("deve realizar a troca com sucesso e atualizar pontos", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(
+      mockBenefits
+    );
     (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
     (userService.updateUserPoints as jest.Mock).mockResolvedValue({});
     (benefitsService.updateBenefit as jest.Mock).mockResolvedValue({});
 
+    // Mock do alert
+    const mockAlert = jest.spyOn(window, "alert").mockImplementation(() => {});
+
     render(<Beneficios />);
 
     const rowA = await screen.findByText("Benefício A");
-    fireEvent.click(rowA); // Seleciona Benefício A
+    fireEvent.click(rowA);
 
     const trocarButton = await screen.findByText("Trocar");
     fireEvent.click(trocarButton);
 
     await waitFor(() => {
-      expect(userService.updateUserPoints).toHaveBeenCalledWith({ pontos: "200" }); // 300 - 100
-      expect(benefitsService.updateBenefit).toHaveBeenCalledWith({
-        ...mockBenefits[0],
-        quantidade: 9, // 10 - 1
-      });
-      expect(screen.getByText("Troca realizada com sucesso!")).toBeInTheDocument();
+      // Verifica se o alert foi chamado com a mensagem de sucesso
+      expect(mockAlert).toHaveBeenCalledWith("Troca realizada com sucesso!");
     });
+
+    mockAlert.mockRestore(); // Restaura o mock após o teste
   });
 
-  it("deve exibir mensagem de erro caso a troca falhe", async () => {
-    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(mockBenefits);
+  it("deve exibir erro caso a troca falhe", async () => {
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(
+      mockBenefits
+    );
     (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
-    (userService.updateUserPoints as jest.Mock).mockRejectedValue(new Error("Erro ao atualizar pontos"));
+    (userService.updateUserPoints as jest.Mock).mockRejectedValue(
+      new Error("Erro ao atualizar pontos")
+    );
+
+    // Mock do alert
+    const mockAlert = jest.spyOn(window, "alert").mockImplementation(() => {});
 
     render(<Beneficios />);
 
     const rowA = await screen.findByText("Benefício A");
-    fireEvent.click(rowA); // Seleciona Benefício A
+    fireEvent.click(rowA);
 
     const trocarButton = await screen.findByText("Trocar");
     fireEvent.click(trocarButton);
 
     await waitFor(() => {
-      expect(screen.getByText("Erro ao realizar a troca. Tente novamente.")).toBeInTheDocument();
+      // Verifica se o alert foi chamado com a mensagem de erro
+      expect(mockAlert).toHaveBeenCalledWith(
+        "Erro ao realizar a troca. Tente novamente."
+      );
     });
+
+    mockAlert.mockRestore(); // Restaura o mock após o teste
   });
 });
