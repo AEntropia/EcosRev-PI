@@ -43,20 +43,38 @@ export async function login(
   }
 }
 export function isAdmin(): string | null {
-  const adm = localStorage.getItem("isAdmin");
-  return adm == "menu.html" ? "admin" : "cliente";
+  if (typeof window !== "undefined") {
+    const adm = localStorage.getItem("isAdmin");
+    return adm == "menu.html" ? "admin" : "cliente";
+  } else {
+    return "erro";
+  }
 }
 // Função para verificar se o usuário está autenticado
 export function isAuthenticated(): boolean {
-  return localStorage.getItem("authToken") !== null;
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("authToken") !== null;
+  } else {
+    return false;
+  }
 }
 
 // Função para obter o token
 export function getToken(): string | null {
-  return localStorage.getItem("authToken");
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("authToken");
+  } else {
+    return "erro";
+  }
 }
 
 // Função para fazer logout
 export function logout(): void {
-  localStorage.removeItem("authToken");
+  if (typeof window !== "undefined") {
+    const adm = localStorage.getItem("isAdmin");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("isAdmin");
+  } else {
+    console.log("erro");
+  }
 }
