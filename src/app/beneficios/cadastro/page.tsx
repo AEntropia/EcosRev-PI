@@ -24,7 +24,7 @@ const CadastroTemplate: React.FC = () => {
     onSubmit: async (values) => {
   
       try {
-        const response = benefitsService.createBenefit(values);
+        const response = await benefitsService.createBenefit(values);
         console.log("Cadastro realizado com sucesso:", response);
         alert("Cadastro realizado com sucesso!");
       } catch (error) {
