@@ -15,7 +15,9 @@ import {
   Box,
   TablePagination,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import Layout from "@/components/UI/organisms/Layout";
 import { benefitsService } from "../../../../routes/benefitRoute";
@@ -30,7 +32,7 @@ interface SelectableTableProps {
 const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) => {
   const [selectedRows, setSelectedRows] = useState<IRow[]>([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage] = useState(4);
+  const [rowsPerPage] = useState(3);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -109,7 +111,7 @@ const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) 
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[4]}
+        rowsPerPageOptions={[3]}
         component="div"
         count={rows.length}
         rowsPerPage={rowsPerPage}
@@ -125,6 +127,15 @@ const Beneficios = () => {
   const [selectedRows, setSelectedRows] = useState<IRow[]>([]);
   const [totalPoints, setTotalPoints] = useState(0);
   const [Points, setPoints] = useState(0);
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error' | 'warning';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -156,9 +167,27 @@ const Beneficios = () => {
     setTotalPoints(selected.reduce((sum, row) => sum + Number(row.pontos), 0));
   };
 
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
+
   const handleExchange = async () => {
+    // Check if any benefits are selected
+    if (selectedRows.length === 0) {
+      setSnackbar({
+        open: true,
+        message: 'Não há benefício selecionado. Por favor, selecione um ou mais benefícios.',
+        severity: 'warning'
+      });
+      return;
+    }
+
     if (totalPoints > Points) {
-      alert("Você não tem pontos suficientes para realizar a troca.");
+      setSnackbar({
+        open: true,
+        message: 'Você não tem pontos suficientes para realizar a troca.',
+        severity: 'error'
+      });
       return;
     }
 
@@ -183,47 +212,61 @@ const Beneficios = () => {
             )
           );
         } else {
-          alert(`O benefício ${selected.nome} está sem estoque.`);
+          setSnackbar({
+            open: true,
+            message: `O benefício ${selected.nome} está sem estoque.`,
+            severity: 'error'
+          });
         }
       }
 
-      alert("Troca realizada com sucesso!");
+      setSnackbar({
+        open: true,
+        message: 'Sua troca de pontos foi concluída com sucesso! Verifique em seu e-mail os detalhes de seu benefício. Agradecemos sua participação.',
+        severity: 'success'
+      });
 
       setTotalPoints(0);
       setSelectedRows([]);
     } catch (error) {
       console.error("Erro ao realizar troca:", error);
-      alert("Erro ao realizar a troca. Tente novamente.");
+      setSnackbar({
+        open: true,
+        message: 'Erro ao realizar a troca. Tente novamente.',
+        severity: 'error'
+      });
     }
   };
 
   return (
     <Layout>
-      <Container sx={{ 
-        paddingTop: 4, 
-        paddingBottom: 4,
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: 3,
-        minHeight: '100vh'
-      }}>
+      <Container 
+        sx={{ 
+          paddingTop: { xs: 2, sm: 3, md: 4 }, 
+          paddingBottom: { xs: 2, sm: 3, md: 4 },
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: { xs: 2, sm: 2, md: 3 },
+          minHeight: '100vh',
+          justifyContent: 'space-between'
+        }}
+      >
         <SelectableTable rows={rows} onRowSelect={handleRowSelect} />
         
         <Box 
           sx={{ 
             width: '100%',
-            maxWidth: 300,
+            maxWidth: { xs: '100%', sm: 400, md: 400, lg: 500, xl: 500 },
             bgcolor: 'background.paper',
             boxShadow: 3,
-            py: 3,
-            px: 3,
+            py: { xs: 2, sm: 3, md: 3 },
+            px: { xs: 2, sm: 3, md: 3 },
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 2,
             mx: 'auto',
-            mt: 'auto'
           }}
         >
           <Box sx={{ textAlign: 'center', mb: 2 }}>
@@ -247,6 +290,22 @@ const Beneficios = () => {
             Trocar
           </ButtonAtom>
         </Box>
+
+        <Snackbar
+          open={snackbar.open}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+
+        >
+          <Alert 
+            onClose={handleCloseSnackbar} 
+            severity={snackbar.severity} 
+            sx={{ width: '100%' }}
+          >
+            {snackbar.message}
+          </Alert>
+        </Snackbar>
       </Container>
     </Layout>
   );
