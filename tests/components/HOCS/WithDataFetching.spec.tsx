@@ -1,63 +1,83 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import axios from "axios";
-import { withDataFetching } from "../../../src/components/HOCS/withDataFetching"; // caminho do HOC
-import { CircularProgress, Alert } from "@mui/material";
+import { withDataFetching } from "@/components/HOCS/withDataFetching";
+import { userService } from "../../../routes/userRoute";
+import { Alert } from "@mui/material";
 
-jest.mock("axios");
-jest.mock("@mui/material", () => ({
-  Alert: ({ children }) => <div data-testid="alert">{children}</div>,
-  AlertTitle: ({ children }) => <div>{children}</div>,
-  CircularProgress: () => <div data-testid="circular-progress" />,
+// Mock do userService
+jest.mock("../../../routes/userRoute", () => ({
+  userService: {
+    getUserById: jest.fn(),
+  },
 }));
 
-const MockComponent = ({ data }) => (
-  <div data-testid="wrapped-component">{JSON.stringify(data)}</div>
+// Componente Simulado
+const MockComponent = ({ data }: any) => (
+  <div data-testid="mock-component">
+    {data ? (
+      <p data-testid="user-name">{data.nome}</p>
+    ) : (
+      "No data available"
+    )}
+  </div>
 );
 
-const mockUrl = "https://api.mock.com/resource";
-const mockData = { id: 1, name: "Item Teste" };
+// HOC com Componente Envolvido
+const MockComponentWithDataFetching = withDataFetching()(MockComponent);
 
 describe("withDataFetching HOC", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+  it("exibe um spinner enquanto os dados estão sendo carregados", async () => {
+    (userService.getUserById as jest.Mock).mockImplementation(() =>
+      new Promise(() => {})
+    );
+
+    render(<MockComponentWithDataFetching params={{ slug: "123" }} />);
+
+    expect(screen.getByRole("progressbar")).toBeInTheDocument();
   });
 
-  it("deve exibir o CircularProgress durante o carregamento", async () => {
-    (axios.get as jest.Mock).mockReturnValue(new Promise(() => {})); // promessa pendente
+  it("exibe os dados após o carregamento bem-sucedido", async () => {
+    const mockUser = {
+      _id: "123",
+      nome: "Jane Doe",
+      email: "jane.doe@example.com",
+      senha: "password",
+      tipo: "user",
+      pontos: "100",
+    };
 
-    const WrappedComponent = withDataFetching()(MockComponent);
-    render(<WrappedComponent params={{ slug: "1" }} />);
+    (userService.getUserById as jest.Mock).mockResolvedValue(mockUser);
 
-    expect(screen.getByTestId("circular-progress")).toBeInTheDocument();
+    render(<MockComponentWithDataFetching params={{ slug: "123" }} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("user-name")).toHaveTextContent("Jane Doe");
+    });
   });
 
-  it("deve exibir o componente wrapped com os dados ao finalizar o carregamento com sucesso", async () => {
-    (axios.get as jest.Mock).mockResolvedValue({ data: mockData });
-
-    const WrappedComponent = withDataFetching()(MockComponent);
-    render(<WrappedComponent params={{ slug: "1" }} />);
-
-    await waitFor(() =>
-      expect(screen.queryByTestId("circular-progress")).not.toBeInTheDocument()
+  it("exibe uma mensagem de erro se a chamada da API falhar", async () => {
+    (userService.getUserById as jest.Mock).mockRejectedValue(
+      new Error("Erro ao tentar realizar a consulta")
     );
-    expect(screen.getByTestId("wrapped-component")).toHaveTextContent(
-      JSON.stringify(mockData)
-    );
+
+    render(<MockComponentWithDataFetching params={{ slug: "123" }} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Erro ao tentar realizar a consulta")).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole("alert")).toBeInTheDocument();
   });
 
-  it("deve exibir um Alert de erro se a requisição falhar", async () => {
-    (axios.get as jest.Mock).mockRejectedValue(new Error("Erro na requisição"));
+  it("não exibe o spinner após o carregamento", async () => {
+    (userService.getUserById as jest.Mock).mockResolvedValue({
+      nome: "John Doe",
+    });
 
-    const WrappedComponent = withDataFetching()(MockComponent);
-    render(<WrappedComponent params={{ slug: "1" }} />);
+    render(<MockComponentWithDataFetching params={{ slug: "123" }} />);
 
-    await waitFor(() =>
-      expect(screen.queryByTestId("circular-progress")).not.toBeInTheDocument()
-    );
-    expect(screen.getByTestId("alert")).toHaveTextContent(
-      "Erro ao tentar realizar a consulta"
-    );
+    await waitFor(() => {
+      expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    });
   });
 });
