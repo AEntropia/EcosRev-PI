@@ -90,7 +90,11 @@ describe('Home (Login Page)', () => {
     fireEvent.click(submitButton);
 
     // Verifica se o alerta de erro é chamado
-    await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Credenciais inválidas!'));
+    await waitFor(() => {
+      expect(
+        screen.getByText("Credenciais inválidas!")
+      ).toBeInTheDocument();
+    });
   });
 
   it('shows an alert if fields are empty and submit is clicked', async () => {
@@ -102,7 +106,11 @@ describe('Home (Login Page)', () => {
     fireEvent.click(submitButton);
 
     // Verifica se o alerta de erro é chamado
-    await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Por favor, preencha os campos.'));
+    await waitFor(() => {
+      expect(
+        screen.getByText("Por favor, preencha os campos.")
+      ).toBeInTheDocument();
+    });
   });
 
   it('calls isAdmin when handleLogin is called', async () => {
