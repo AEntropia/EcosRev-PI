@@ -72,6 +72,50 @@ describe('Home (Login Page)', () => {
     expect(login).toHaveBeenCalledWith('test@example.com', 'password123');
   });
 
+<<<<<<< HEAD
+  it('shows an error message when login fails', async () => {
+    render(<Home />);
+
+    const emailField = screen.getByLabelText(/email/i);
+    const passwordField = screen.getByLabelText(/senha/i);
+    const submitButton = screen.getByRole('button', { name: /Login/i });
+
+    // Preenche o formulário com dados válidos
+    fireEvent.change(emailField, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordField, { target: { value: 'password123' } });
+
+    // Mock da função login para simular falha
+    (login as jest.Mock).mockResolvedValue(false);
+
+    // Simula o envio do formulário
+    fireEvent.click(submitButton);
+
+    // Verifica se o alerta de erro é chamado
+    await waitFor(() => {
+      expect(
+        screen.getByText("Credenciais inválidas!")
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('shows an alert if fields are empty and submit is clicked', async () => {
+    render(<Home />);
+
+    const submitButton = screen.getByRole('button', { name: /Login/i });
+
+    // Simula o envio do formulário sem preencher os campos
+    fireEvent.click(submitButton);
+
+    // Verifica se o alerta de erro é chamado
+    await waitFor(() => {
+      expect(
+        screen.getByText("Por favor, preencha os campos.")
+      ).toBeInTheDocument();
+    });
+  });
+
+=======
+>>>>>>> 0102d4348b8c09d7998c9b53809416fbaf4446f0
   it('calls isAdmin when handleLogin is called', async () => {
     render(<Home />);
 

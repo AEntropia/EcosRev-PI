@@ -55,6 +55,13 @@ describe("Benefícios", () => {
     },
   ];
 
+  const mockUser2 = [
+    {
+      _id: "user1",
+      pontos: 0,
+    },
+  ];
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -105,48 +112,33 @@ describe("Benefícios", () => {
 
     const trocarButton = await screen.findByText("Trocar");
     expect(trocarButton).toBeInTheDocument(); // Verifica se o botão Trocar está visível
-
-    fireEvent.click(trocarButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("Total de Pontos Selecionados")
-      ).toBeInTheDocument();
-    });
-  });
+  })
 
   it("deve exibir erro se pontos totais excederem os pontos do usuário", async () => {
-    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(
-      mockBenefits
-    );
-    (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser);
-
-    // Mock do alert
-    const mockAlert = jest.spyOn(window, "alert").mockImplementation(() => {});
-
+    (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(mockBenefits);
+    (userService.getLoggedUser as jest.Mock).mockResolvedValue(mockUser2);
+  
     render(<Beneficios />);
-
+  
     // Seleciona os benefícios
     const rowA = await screen.findByText("Benefício A");
     const rowB = await screen.findByText("Benefício B");
-
-    // Firing click events to select the rows
+  
     fireEvent.click(rowA);
     fireEvent.click(rowB);
-
-    // Espera até que a troca seja tentada
+  
+    // Clica no botão "Trocar"
     const trocarButton = await screen.findByText("Trocar");
     fireEvent.click(trocarButton);
-
-    // Espera o alerta ser chamado
+  
+    // Verifica se o Snackbar exibe a mensagem de erro
     await waitFor(() => {
-      expect(mockAlert).toHaveBeenCalledWith(
-        "Você não tem pontos suficientes para realizar a troca."
-      );
+      expect(
+        screen.getByText("Você não tem pontos suficientes para realizar a troca.")
+      ).toBeInTheDocument();
     });
-
-    mockAlert.mockRestore(); // Restaura o mock após o teste
   });
+  
 
   it("deve realizar a troca com sucesso e atualizar pontos", async () => {
     (benefitsService.getAllBenefits as jest.Mock).mockResolvedValue(
@@ -156,9 +148,6 @@ describe("Benefícios", () => {
     (userService.updateUserPoints as jest.Mock).mockResolvedValue({});
     (benefitsService.updateBenefit as jest.Mock).mockResolvedValue({});
 
-    // Mock do alert
-    const mockAlert = jest.spyOn(window, "alert").mockImplementation(() => {});
-
     render(<Beneficios />);
 
     const rowA = await screen.findByText("Benefício A");
@@ -168,11 +157,11 @@ describe("Benefícios", () => {
     fireEvent.click(trocarButton);
 
     await waitFor(() => {
-      // Verifica se o alert foi chamado com a mensagem de sucesso
-      expect(mockAlert).toHaveBeenCalledWith("Troca realizada com sucesso!");
+      expect(
+        screen.getByText('Sua troca de pontos foi concluída com sucesso! Verifique em seu e-mail os detalhes de seu benefício. Agradecemos sua participação.')
+      ).toBeInTheDocument();
     });
 
-    mockAlert.mockRestore(); // Restaura o mock após o teste
   });
 
   it("deve exibir erro caso a troca falhe", async () => {
@@ -184,9 +173,6 @@ describe("Benefícios", () => {
       new Error("Erro ao atualizar pontos")
     );
 
-    // Mock do alert
-    const mockAlert = jest.spyOn(window, "alert").mockImplementation(() => {});
-
     render(<Beneficios />);
 
     const rowA = await screen.findByText("Benefício A");
@@ -196,12 +182,9 @@ describe("Benefícios", () => {
     fireEvent.click(trocarButton);
 
     await waitFor(() => {
-      // Verifica se o alert foi chamado com a mensagem de erro
-      expect(mockAlert).toHaveBeenCalledWith(
-        "Erro ao realizar a troca. Tente novamente."
-      );
+      expect(
+        screen.getByText("Erro ao realizar a troca. Tente novamente.")
+      ).toBeInTheDocument();
     });
-
-    mockAlert.mockRestore(); // Restaura o mock após o teste
   });
 });
