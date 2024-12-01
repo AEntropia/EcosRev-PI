@@ -10,4 +10,7 @@ export const FormTextField = styled(TextField)<TextFieldProps>(() => ({
       borderColor: 'primary.main',
     },
   },
+  '@media (max-width: 600px)': {
+    width: '100%',  // Garantindo que o campo ocupe 100% da largura
+  },
 }));

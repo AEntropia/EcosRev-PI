@@ -10,6 +10,9 @@ const PageWrapper = styled('div')({
   alignItems: 'center',
   justifyContent: 'center',
   overflow: 'hidden',
+  '@media (max-width: 600px)': {
+    padding: '0 16px',  // Adicionando algum padding para evitar que o conteúdo fique colado nas bordas da tela
+  }
 });
 
 const BackgroundImage = styled('div')<{ backgroundImage: string }>(({ backgroundImage }) => ({
@@ -22,6 +25,9 @@ const BackgroundImage = styled('div')<{ backgroundImage: string }>(({ background
   backgroundPosition: 'center',
   zIndex: 0,
   backgroundImage: `url(${backgroundImage})`,
+  '@media (max-width: 600px)': {
+    backgroundPosition: 'top',  // Ajusta a posição do background para ficar mais adequado em telas pequenas
+  }
 }));
 
 interface AuthTemplateProps {
