@@ -220,7 +220,7 @@ export default function CustomTable({
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} title={title}/>
+        <EnhancedTableToolbar numSelected={selected.length} title={title} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -280,13 +280,14 @@ export default function CustomTable({
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
-          labelRowsPerPage=""        />
+          labelRowsPerPage=""
+        />
       </Paper>
       {/* <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}

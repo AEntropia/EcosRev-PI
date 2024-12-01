@@ -71,7 +71,9 @@ const Beneficios = () => {
         <CustomTable
           rows={rows}
           headCells={headCells}
-          editPath="/beneficios/edit" title={""}        />
+          editPath="/beneficios/edit"
+          title={""}
+        />
       </Container>
     </Layout>
   );
