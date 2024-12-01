@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import { useEffect, useState } from "react";
 import { 
@@ -27,6 +27,7 @@ import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 interface SelectableTableProps {
   rows: IRow[];
   onRowSelect: (selectedRows: IRow[]) => void;
+  sx?: object
 }
 
 const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) => {
@@ -52,64 +53,33 @@ const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) 
   const displayedRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
-    <>
-      <TableContainer component={Paper} sx={{ maxHeight: isMobile ? 'calc(100vh - 300px)' : 400 }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell 
-                padding="checkbox"
-                sx={{ 
-                  bgcolor: 'background.paper',
-                  borderBottom: 1,
-                  borderColor: 'divider'
-                }}
-              ></TableCell>
-              <TableCell sx={{ 
-                bgcolor: 'background.paper',
-                borderBottom: 1,
-                borderColor: 'divider'
-              }}>Nome</TableCell>
-              <TableCell sx={{ 
-                bgcolor: 'background.paper',
-                borderBottom: 1,
-                borderColor: 'divider'
-              }}>Data</TableCell>
-              {!isMobile && (
-                <TableCell sx={{ 
-                  bgcolor: 'background.paper',
-                  borderBottom: 1,
-                  borderColor: 'divider'
-                }}>Endereço</TableCell>
-              )}
-              <TableCell sx={{ 
-                bgcolor: 'background.paper',
-                borderBottom: 1,
-                borderColor: 'divider'
-              }}>Pontos</TableCell>
-              <TableCell sx={{ 
-                bgcolor: 'background.paper',
-                borderBottom: 1,
-                borderColor: 'divider'
-              }}>Quantidade</TableCell>
+    <TableContainer component={Paper} sx={{ maxHeight: 500, overflowX: 'auto' }}>
+      <Table stickyHeader>
+        <TableHead>
+          <TableRow>
+            <TableCell padding="checkbox"></TableCell>
+            <TableCell>Nome</TableCell>
+            <TableCell>Data</TableCell>
+            {!isMobile && <TableCell>Endereço</TableCell>}
+            <TableCell>Pontos</TableCell>
+            <TableCell>Quantidade</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {displayedRows.map((row) => (
+            <TableRow key={row._id} onClick={() => handleRowClick(row)} hover>
+              <TableCell padding="checkbox">
+                <Checkbox checked={selectedRows.includes(row)} />
+              </TableCell>
+              <TableCell>{row.nome}</TableCell>
+              <TableCell>{row.data}</TableCell>
+              {!isMobile && <TableCell>{row.endereco}</TableCell>}
+              <TableCell>{row.pontos}</TableCell>
+              <TableCell>{row.quantidade}</TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {displayedRows.map((row) => (
-              <TableRow key={row._id} onClick={() => handleRowClick(row)} hover>
-                <TableCell padding="checkbox">
-                  <Checkbox checked={selectedRows.includes(row)} />
-                </TableCell>
-                <TableCell>{row.nome}</TableCell>
-                <TableCell>{row.data}</TableCell>
-                {!isMobile && <TableCell>{row.endereco}</TableCell>}
-                <TableCell>{row.pontos}</TableCell>
-                <TableCell>{row.quantidade}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          ))}
+        </TableBody>
+      </Table>
       <TablePagination
         rowsPerPageOptions={[5]}
         component="div"
@@ -118,7 +88,7 @@ const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) 
         page={page}
         onPageChange={handleChangePage}
       />
-    </>
+    </TableContainer>
   );
 };
 
@@ -172,7 +142,6 @@ const Beneficios = () => {
   };
 
   const handleExchange = async () => {
-    // Check if any benefits are selected
     if (selectedRows.length === 0) {
       setSnackbar({
         open: true,
@@ -193,7 +162,6 @@ const Beneficios = () => {
 
     try {
       const updatedPoints = Points - totalPoints;
-
       await userService.updateUserPoints({ pontos: updatedPoints.toString() });
       setPoints(updatedPoints);
 
@@ -248,10 +216,19 @@ const Beneficios = () => {
           flexDirection: 'column', 
           gap: { xs: 1, sm: 2, md: 2 },
           minHeight: 'auto',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
+          width: '100%', 
+          maxWidth: '100%', 
+          overflowX: 'hidden' 
         }}
       >
-        <SelectableTable rows={rows} onRowSelect={handleRowSelect} />
+        <SelectableTable 
+          rows={rows} 
+          onRowSelect={handleRowSelect} 
+          sx={{
+            marginBottom: { xs: 2, sm: 0 }, // Adds margin on small screens (xs)
+          }}
+        />
         
         <Box 
           sx={{ 
@@ -290,7 +267,6 @@ const Beneficios = () => {
             Trocar
           </ButtonAtom>
         </Box>
-
         <Snackbar
           open={snackbar.open}
           autoHideDuration={6000}
