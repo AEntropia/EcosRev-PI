@@ -11,8 +11,6 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import { visuallyHidden } from "@mui/utils";
 import { useRouter } from "next/navigation";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -54,6 +52,7 @@ interface EnhancedTableProps {
 
 interface EnhancedTableToolbarProps {
   numSelected: number;
+  title: string;
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
@@ -83,12 +82,14 @@ interface CustomTableProps {
   rows: any[];
   headCells: any;
   editPath: string;
+  title: string;
 }
 
 export default function CustomTable({
   rows,
   headCells,
   editPath,
+  title,
 }: CustomTableProps) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<string>("");
@@ -219,7 +220,7 @@ export default function CustomTable({
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} title={title}/>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

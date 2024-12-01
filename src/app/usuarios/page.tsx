@@ -2,9 +2,7 @@
 
 import CustomTable from "@/components/UI/organisms/CustomTable";
 import Layout from "@/components/UI/organisms/Layout";
-import { env } from "@/config/env";
 import { Container } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { userService } from "../../../routes/userRoute";
 import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
@@ -16,7 +14,6 @@ interface User {
   pass: string;
   points: number;
   type: string;
-  // outros campos...
 }
 
 const Usuarios = () => {
@@ -69,6 +66,7 @@ const Usuarios = () => {
           rows={rows}
           headCells={headCells}
           editPath="/usuarios/edit"
+          title="Lista de Usuários"
         />
       </Container>
     </Layout>
