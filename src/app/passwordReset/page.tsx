@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from "react";
-import { Box, Container, Typography } from "@mui/material";
+import { Box, Container, Typography, Alert } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Header from "../../components/UI/molecules/Header";
 import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
@@ -44,16 +44,19 @@ const PasswordReset: React.FC = () => {
 
     if (formData.password !== formData.confirmPassword) {
       setError("As senhas não coincidem!");
+      setSuccess("");
       return;
     }
 
     try {
       const message = await simulateBackend({ password: formData.password });
       setSuccess(message as string);
+      setError("");
       setFormData({ password: "", confirmPassword: "" });
       setTimeout(() => router.push("/"), 2000); // Redireciona após 2 segundos
     } catch {
       setError("Erro ao redefinir senha!");
+      setSuccess("");
     }
   };
 
@@ -96,6 +99,17 @@ const PasswordReset: React.FC = () => {
             Redefinir Senha
           </Typography>
 
+          {error && (
+            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" sx={{ width: "100%", mb: 2 }}>
+              {success}
+            </Alert>
+          )}
+
           <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
             <FormTextField
               label="Nova Senha"
@@ -118,9 +132,6 @@ const PasswordReset: React.FC = () => {
               required
             />
 
-            {error && <Typography color="error">{error}</Typography>}
-            {success && <Typography color="success">{success}</Typography>}
-
             <ButtonAtom
               type="submit"
               sx={{ 
@@ -141,7 +152,6 @@ const PasswordReset: React.FC = () => {
               </Typography>
             </Link>
           </Box>
-
         </Box>
       </Container>
     </AuthTemplate>

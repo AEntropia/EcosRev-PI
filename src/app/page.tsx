@@ -7,44 +7,62 @@ import { AuthForm } from "@/components/UI/molecules/AuthForm";
 import { AuthTemplate } from "@/components/templates/auth/AuthTemplate";
 import backgroundImage from "../../public/images/loginImg.jpg";
 import Header from "@/components/UI/molecules/Header";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
 
-// import { useAuth } from "../../src/context/AuthContext";
-// deixei o authprovider comentado enquanto aguarda a conexao com api
+const Alert = MuiAlert;
 
 export default function Home() {
   const router = useRouter();
-  // const { login } = useAuth(); // Acesso à função de login do contexto
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info" as "info" | "success" | "error" | "warning",
+  });
 
-  // Função de handle para o login
+  const handleSnackbarClose = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // Impede o comportamento padrão do formulário
+    e.preventDefault();
 
-    // Simulação de login (sem validação dos campos)
-
-    // Lógica de autenticação após conexão com API:
     if (email && password) {
-         try {
-    //       // Chama a função de login do contexto AuthProvider
-           const success = await login(email, password);
+      try {
+        const success = await login(email, password);
 
-           if (success) {
-             router.push("/home"); // Redireciona após login bem-sucedido
-           } else {
-             alert("Credenciais inválidas!");
-           }
-         } catch (error) {
-           console.error("Erro no login:", error);
-           alert("Ocorreu um erro ao tentar realizar o login.");
-         }
-       } else {
-         alert("Por favor, preencha os campos.");
-       }
-       console.log(isAdmin())
-     };
-
-    //   console.log("Email:", email, "Senha:", password);
+        if (success) {
+          setSnackbar({
+            open: true,
+            message: "Login realizado com sucesso!",
+            severity: "success",
+          });
+          router.push("/home");
+        } else {
+          setSnackbar({
+            open: true,
+            message: "Credenciais inválidas!",
+            severity: "error",
+          });
+        }
+      } catch (error) {
+        console.error("Erro no login:", error);
+        setSnackbar({
+          open: true,
+          message: "Ocorreu um erro ao tentar realizar o login.",
+          severity: "error",
+        });
+      }
+    } else {
+      setSnackbar({
+        open: true,
+        message: "Por favor, preencha os campos.",
+        severity: "warning",
+      });
+    }
+  };
 
   return (
     <AuthTemplate backgroundImage={backgroundImage.src}>
@@ -57,6 +75,16 @@ export default function Home() {
         onPasswordChange={(e) => setPassword(e.target.value)}
         onSubmit={handleLogin}
       />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </AuthTemplate>
   );
 }
