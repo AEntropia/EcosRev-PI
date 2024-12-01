@@ -39,7 +39,4 @@ describe("Signup", () => {
     expect(screen.getByLabelText(/Confirmar Senha/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Criar Conta/i })).toBeInTheDocument();
   });
-
-
-
 });
