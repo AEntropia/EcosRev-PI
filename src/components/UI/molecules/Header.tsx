@@ -61,6 +61,13 @@ const Header = () => {
         width: "100%",
         zIndex: 1000,
         boxShadow: `0px 1px 1px rgba(0, 0, 0, 0.5)`,
+        isplay: {
+          xs: "none", // Esconde o header em telas pequenas (horizontal)
+          sm: "flex", // Mostra o header em telas maiores
+        },
+        "@media (orientation: landscape) and (max-width: 936px)": {
+          display: "none", // Esconde o header em modo paisagem para dispositivos móveis
+        },
       }}
     >
       {/* Menu Hamburguer - à esquerda */}
