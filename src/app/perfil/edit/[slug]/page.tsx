@@ -49,20 +49,26 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="profile-container">
-      <Card className="profile-card">
+    <div className="profile-container" data-testid="profile-page">
+      <Card className="profile-card" data-testid="profile-card">
         <CardHeader title="Perfil do Usuário" />
         <CardContent>
-          <div className="avatar-container">
-            <Avatar src={userProfile.imageUrl} className="profile-avatar" alt="Foto do Perfil" />
+          <div className="avatar-container" data-testid="avatar-container">
+            <Avatar 
+              src={userProfile.imageUrl} 
+              className="profile-avatar" 
+              alt="Foto do Perfil"
+              data-testid="profile-avatar"
+            />
           </div>
-          <form onSubmit={handleSubmit} className="profile-form">
+          <form onSubmit={handleSubmit} className="profile-form" data-testid="profile-form">
             <TextField
               label="Nome"
               value={userProfile.name}
               fullWidth
               required
               margin="normal"
+              data-testid="name-input"
               onChange={(e) => setUserProfile({ ...userProfile, name: e.target.value })}
             />
             <TextField
@@ -71,6 +77,7 @@ const ProfilePage = () => {
               fullWidth
               required
               margin="normal"
+              data-testid="address-input"
               onChange={(e) => setUserProfile({ ...userProfile, endereco: e.target.value })}
             />
             <TextField
@@ -80,9 +87,14 @@ const ProfilePage = () => {
               fullWidth
               required
               margin="normal"
+              data-testid="password-input"
               onChange={(e) => setUserProfile({ ...userProfile, senha: e.target.value })}
             />
-            <ButtonAtom variant="contained" type="submit">
+            <ButtonAtom 
+              variant="contained" 
+              type="submit"
+              data-testid="submit-button"
+            >
               Salvar
             </ButtonAtom>
           </form>

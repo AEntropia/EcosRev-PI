@@ -65,6 +65,7 @@ const PasswordReset: React.FC = () => {
       <Header />
 
       <Container
+        data-testid="password-reset-container"
         component="main"
         maxWidth="xs"
         sx={{
@@ -78,6 +79,7 @@ const PasswordReset: React.FC = () => {
         }}
       >
         <Box
+          data-testid="password-reset-form-container"
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -89,6 +91,7 @@ const PasswordReset: React.FC = () => {
           }}
         >
           <Typography 
+            data-testid="page-title"
             variant="h5"
             color="primary" 
             gutterBottom 
@@ -100,18 +103,32 @@ const PasswordReset: React.FC = () => {
           </Typography>
 
           {error && (
-            <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+            <Alert 
+              data-testid="error-alert"
+              severity="error" 
+              sx={{ width: "100%", mb: 2 }}
+            >
               {error}
             </Alert>
           )}
           {success && (
-            <Alert severity="success" sx={{ width: "100%", mb: 2 }}>
+            <Alert 
+              data-testid="success-alert"
+              severity="success" 
+              sx={{ width: "100%", mb: 2 }}
+            >
               {success}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+          <Box 
+            component="form" 
+            onSubmit={handleSubmit} 
+            sx={{ width: "100%" }}
+            data-testid="password-reset-form"
+          >
             <FormTextField
+              data-testid="password-input"
               label="Nova Senha"
               variant="outlined"
               fullWidth
@@ -122,6 +139,7 @@ const PasswordReset: React.FC = () => {
               required
             />
             <FormTextField
+              data-testid="confirm-password-input"
               label="Confirmar Senha"
               variant="outlined"
               fullWidth
@@ -133,6 +151,7 @@ const PasswordReset: React.FC = () => {
             />
 
             <ButtonAtom
+              data-testid="submit-button"
               type="submit"
               sx={{ 
                 mt: 3, 
@@ -146,7 +165,11 @@ const PasswordReset: React.FC = () => {
           </Box>
 
           <Box sx={{ marginTop: 2 }}>
-            <Link href="/" passHref>
+            <Link 
+              href="/" 
+              passHref
+              data-testid="back-to-login-link"
+            >
               <Typography variant="body2" sx={{ color: "primary.main" }}>
                 Voltar para Login
               </Typography>

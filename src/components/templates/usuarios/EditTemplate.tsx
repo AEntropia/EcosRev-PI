@@ -32,7 +32,6 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ usuario }) => {
     onSubmit: (usuario) => {
       userService.updateUser(usuario)
       router.push("/usuarios");
-
     },
   });
 
@@ -47,8 +46,8 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ usuario }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      {/* <Container component="main" maxWidth="sm" sx={{ mt: 5 }}> */}
       <Box
+        data-testid="edit-template-container"
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -59,12 +58,23 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ usuario }) => {
           boxShadow: 3,
         }}
       >
-        <Typography variant="h5" color="primary" sx={{ mb: 2 }}>
+        <Typography 
+          variant="h5" 
+          color="primary" 
+          sx={{ mb: 2 }}
+          data-testid="edit-template-title"
+        >
           Atualizar pontos
         </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+        <Box 
+          component="form" 
+          onSubmit={handleSubmit} 
+          sx={{ width: "100%" }}
+          data-testid="edit-form"
+        >
           <TextField
+            data-testid="nome-input"
             name="nome"
             label="Nome"
             fullWidth
@@ -76,6 +86,7 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ usuario }) => {
             disabled
           />
           <TextField
+            data-testid="pontos-input"
             name="pontos"
             label="Pontos"
             fullWidth
@@ -87,34 +98,51 @@ const EditTemplate: React.FC<EditTemplateProps> = ({ usuario }) => {
             helperText={errors.pontos}
           />
 
-          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
+          <Box 
+            sx={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              mt: 3 
+            }}
+            data-testid="form-actions"
+          >
             <Box sx={{ display: "flex", gap: 2 }}>
-              <Button variant="outlined" color="primary" 
+              <Button 
+                data-testid="cancelar-button"
+                variant="outlined" 
+                color="primary" 
                 sx={{
                   boxShadow: 3, 
                 }} 
-                onClick={() => router.push("/usuarios")}>
+                onClick={() => router.push("/usuarios")}
+              >
                 Cancelar
               </Button>
-              <ButtonAtom variant="contained" color="primary" type="submit">
+              <ButtonAtom 
+                data-testid="atualizar-button"
+                variant="contained" 
+                color="primary" 
+                type="submit"
+              >
                 Atualizar
               </ButtonAtom>
             </Box>
-            <Button variant="outlined" 
+            <Button 
+              data-testid="deletar-button"
+              variant="outlined" 
               sx={{
                 boxShadow: 3, 
               }} 
-              onClick={()  => {
-              userService.deleteUser(usuario?._id)
-              router.push("/usuarios");
+              onClick={() => {
+                userService.deleteUser(usuario?._id)
+                router.push("/usuarios");
               }}
-              >
-                <DeleteIcon />
+            >
+              <DeleteIcon />
             </Button>
           </Box>
         </Box>
       </Box>
-      {/* </Container> */}
     </ThemeProvider>
   );
 };

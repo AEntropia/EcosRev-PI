@@ -4,12 +4,14 @@ import CadastroTemplate from "../../../../src/app/beneficios/cadastro/page";
 import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { benefitsService } from "../../../../routes/benefitRoute";
+import "@testing-library/jest-dom";
+import { Snackbar, Alert } from "@mui/material";
 
 // Mock do componente Image do Next.js
-jest.mock('next/image', () => {
+jest.mock("next/image", () => {
   return {
     __esModule: true,
-    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+    default: ({ src, alt, width, height }: { src: string; alt: string; width: number; height: number }) => (
       <img src={src} alt={alt} width={width} height={height} />
     ),
   };
@@ -26,13 +28,14 @@ jest.mock("../../../../routes/benefitRoute", () => ({
 }));
 
 jest.mock("@/components/HOCS/withAdminProtection", () => ({
-  withAdminProtection: jest.fn((Component) => Component), // Mock que retorna o componente diretamente
+  withAdminProtection: jest.fn((Component) => Component),
 }));
 
 describe("CadastroTemplate", () => {
   const mockPush = jest.fn();
 
   beforeEach(() => {
+    jest.clearAllMocks();
     (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
     });
@@ -46,10 +49,6 @@ describe("CadastroTemplate", () => {
       handleChange: jest.fn(),
       errors: {},
     }));
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
   });
 
   it("deve renderizar o formulário com os campos corretamente", () => {
@@ -70,60 +69,62 @@ describe("CadastroTemplate", () => {
     expect(mockPush).toHaveBeenCalledWith("/home");
   });
 
-  it("deve chamar a função onSubmit com os valores do formulário ao enviar", async () => {
+  it("deve exibir o Snackbar de sucesso após cadastro bem-sucedido", async () => {
     const mockCreateBenefit = jest.fn().mockResolvedValue("success");
-
-    (benefitsService.createBenefit as jest.Mock).mockImplementation(
-      mockCreateBenefit
-    );
+    (benefitsService.createBenefit as jest.Mock).mockImplementation(mockCreateBenefit);
 
     render(<CadastroTemplate />);
 
     fireEvent.click(screen.getByText("Cadastrar"));
 
     await waitFor(() => {
-      expect(mockCreateBenefit).toHaveBeenCalledWith({
-        data: "",
-        nome: "",
-        endereco: "",
-        pontos: 0,
-        quantidade: 0,
-      });
+      expect(screen.getByText("Cadastro realizado com sucesso!")).toBeInTheDocument();
+    });
+
+  });
+
+  it("deve exibir o Snackbar de erro em caso de falha no cadastro", async () => {
+    const mockCreateBenefit = jest.fn().mockRejectedValue(new Error("Erro ao cadastrar benefício"));
+    (benefitsService.createBenefit as jest.Mock).mockImplementation(mockCreateBenefit);
+
+    render(<CadastroTemplate />);
+
+    fireEvent.click(screen.getByText("Cadastrar"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Erro ao cadastrar benefício, verifique com o suporte")).toBeInTheDocument();
     });
   });
 
-  it("deve exibir um erro no console em caso de falha na criação do benefício", async () => {
-    // Cria um espião para monitorar o console.error
-    const consoleSpy = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-
-    // Mock para a função que rejeita a promessa com erro
-    const mockCreateBenefit = jest
-      .fn()
-      .mockRejectedValue(new Error("Erro ao cadastrar"));
-
-    // Substitui a implementação do serviço com o mock
-    (benefitsService.createBenefit as jest.Mock).mockImplementation(
-      mockCreateBenefit
-    );
-
-    // Renderiza o componente
+  it("deve fechar o Snackbar ao clicar no botão de fechar", async () => {
     render(<CadastroTemplate />);
 
-    // Aciona o envio do formulário
+    // Simula a abertura do Snackbar
     fireEvent.click(screen.getByText("Cadastrar"));
 
-    // Aguarda até que o erro seja capturado
     await waitFor(() => {
-      // Verifica se o erro foi registrado no console
-      expect(consoleSpy).toHaveBeenCalledWith(
-        "Erro ao cadastrar benefício:",
-        expect.any(Error)
-      );
+      fireEvent.click(screen.getByRole("button", { name: /close/i }));
     });
 
-    // Restaura o espião
-    consoleSpy.mockRestore();
+    await waitFor(() => {
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+  });
+
+  it("deve exibir mensagens de erro de validação nos campos obrigatórios", async () => {
+    (useFormik as jest.Mock).mockImplementation((config) => ({
+      handleSubmit: jest.fn(),
+      values: config.initialValues,
+      handleChange: jest.fn(),
+      errors: {
+        nome: "O nome é obrigatório",
+        data: "A data é obrigatória",
+      },
+    }));
+
+    render(<CadastroTemplate />);
+
+    expect(screen.getByText("O nome é obrigatório")).toBeInTheDocument();
+    expect(screen.getByText("A data é obrigatória")).toBeInTheDocument();
   });
 });

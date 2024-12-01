@@ -201,7 +201,9 @@ const Beneficios = () => {
       setSnackbar({
         open: true,
         message: 'Erro ao realizar a troca. Tente novamente.',
-        severity: 'error'
+        severity: 'error',
+        
+        
       });
     }
   };

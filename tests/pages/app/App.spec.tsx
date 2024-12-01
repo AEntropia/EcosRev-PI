@@ -72,7 +72,6 @@ describe('Home (Login Page)', () => {
     expect(login).toHaveBeenCalledWith('test@example.com', 'password123');
   });
 
-<<<<<<< HEAD
   it('shows an error message when login fails', async () => {
     render(<Home />);
 
@@ -114,8 +113,6 @@ describe('Home (Login Page)', () => {
     });
   });
 
-=======
->>>>>>> 0102d4348b8c09d7998c9b53809416fbaf4446f0
   it('calls isAdmin when handleLogin is called', async () => {
     render(<Home />);
 

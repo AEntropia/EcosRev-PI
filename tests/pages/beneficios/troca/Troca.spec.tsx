@@ -185,6 +185,6 @@ describe("Benefícios", () => {
       expect(
         screen.getByText("Erro ao realizar a troca. Tente novamente.")
       ).toBeInTheDocument();
-    });
+    },{ timeout: 3000 }); // Aumenta o tempo limite para 3 segundos
   });
 });

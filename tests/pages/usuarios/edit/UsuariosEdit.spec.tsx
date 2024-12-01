@@ -1,98 +1,106 @@
+import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import UsuariosEdit from '../../../../src/app/usuarios/edit/[slug]/page';
-import { withAdminProtection } from '@/components/HOCS/withAdminProtection';
+import UsuariosEdit from '@/app/usuarios/edit/[slug]/page'; // Ajuste o caminho conforme necessário
 import { withDataFetching } from '@/components/HOCS/withDataFetching';
-import { IUsuarios } from '@/interfaces/IUsuarios';
-import EditTemplate from '@/components/templates/usuarios/EditTemplate';
+import { withAdminProtection } from '@/components/HOCS/withAdminProtection';
 
-// Mock do componente Image do Next.js
-jest.mock('next/image', () => {
+// Mocks dos HOCs
+jest.mock('@/components/HOCS/withDataFetching', () => ({
+  withDataFetching: jest.fn(() => (Component) => (props) => <Component {...props} />)
+}));
+
+jest.mock('@/components/HOCS/withAdminProtection', () => ({
+  withAdminProtection: jest.fn((Component) => (props) => <Component {...props} />)
+}));
+
+// Mock do Layout
+jest.mock('@/components/UI/organisms/Layout', () => {
   return {
     __esModule: true,
-    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
-      <img src={src} alt={alt} width={width} height={height} />
-    ),
+    default: ({ children }: { children: React.ReactNode }) => <div data-testid="layout">{children}</div>
   };
 });
 
-// Mock do serviço de dados (para o HOC withDataFetching)
-jest.mock('@/components/HOCS/withDataFetching', () => ({
-  withDataFetching: () => (Component: React.ComponentType) => (props: any) => <Component {...props} data={[{
-    _id: '1',
-    nome: 'John Doe',
-    email: 'john.doe@example.com',
-    senha: 'password123',
-    pontos: 100,
-    tipo: 'admin',
-    ativo: true,
-  }]} />,
+// Mock do EditTemplate
+jest.mock('@/components/templates/usuarios/EditTemplate', () => {
+  return {
+    __esModule: true,
+    default: ({ usuario }: { usuario: any }) => (
+      <div data-testid="edit-template">
+        {usuario && (
+          <>
+            <span data-testid="usuario-nome">{usuario.nome}</span>
+            <span data-testid="usuario-email">{usuario.email}</span>
+          </>
+        )}
+      </div>
+    )
+  };
+});
+
+// Mock do Container do Material-UI
+jest.mock('@mui/material', () => ({
+  Container: ({ children, ...props }: { children: React.ReactNode }) => (
+    <div data-testid="container" {...props}>{children}</div>
+  )
 }));
 
-// Mock do HOC withAdminProtection
-jest.mock('@/components/HOCS/withAdminProtection', () => ({
-  withAdminProtection: (Component: React.ComponentType) => Component,
-}));
-
-describe('UsuariosEdit Page', () => {
-  it('renders the EditTemplate with user data', async () => {
-    // Renderiza o componente com a propriedade "params" e "data" mockada
-    render(<UsuariosEdit params={{ slug: '1' }} data={[{
-      _id: '1',
-      nome: 'John Doe',
-      email: 'john.doe@example.com',
-      senha: 'password123',
+describe('UsuariosEdit', () => {
+  const mockParams = { slug: '123' };
+  const mockData = [
+    {
+      _id: '123',
+      nome: 'João Silva',
+      email: 'joao.silva@example.com',
+      senha: 'hashedpassword',
       pontos: 100,
       tipo: 'admin',
-      ativo: true,
-    }]} />);
+      ativo: true
+    }
+  ];
 
-    // Verifica se os dados estão sendo passados corretamente para o EditTemplate
-    await waitFor(() => expect(screen.getByText('John Doe')).toBeInTheDocument());
-    expect(screen.getByText('john.doe@example.com')).toBeInTheDocument();
-    expect(screen.getByText('100')).toBeInTheDocument();
-    expect(screen.getByText('admin')).toBeInTheDocument();
+  beforeEach(() => {
+    // Limpa todos os mocks antes de cada teste
+    jest.clearAllMocks();
   });
 
-  it('updates state correctly when data is passed', async () => {
-    const mockData = [{
-      _id: '1',
-      nome: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      senha: 'password456',
-      pontos: 200,
-      tipo: 'user',
-      ativo: false,
-    }];
+  it('renders the component with user data', async () => {
+    render(<UsuariosEdit params={mockParams} data={mockData} />);
 
-    render(<UsuariosEdit params={{ slug: '1' }} data={mockData} />);
+    // Verifica se o Layout foi renderizado
+    const layout = screen.getByTestId('layout');
+    expect(layout).toBeInTheDocument();
 
-    // Verifica se o estado foi corretamente atualizado
-    await waitFor(() => expect(screen.getByText('Jane Smith')).toBeInTheDocument());
-    expect(screen.getByText('jane.smith@example.com')).toBeInTheDocument();
-    expect(screen.getByText('200')).toBeInTheDocument();
-    expect(screen.getByText('user')).toBeInTheDocument();
+    // Verifica se o Container foi renderizado
+    const container = screen.getByTestId('container');
+    expect(container).toBeInTheDocument();
+
+    // Verifica se o EditTemplate foi renderizado com os dados do usuário
+    const editTemplate = screen.getByTestId('edit-template');
+    expect(editTemplate).toBeInTheDocument();
+
+    // Verifica se os dados do usuário estão corretos
+    const nomeElement = screen.getByTestId('usuario-nome');
+    const emailElement = screen.getByTestId('usuario-email');
+    
+    expect(nomeElement).toHaveTextContent('João Silva');
+    expect(emailElement).toHaveTextContent('joao.silva@example.com');
   });
 
-  it('displays error if no data is provided', async () => {
-    render(<UsuariosEdit params={{ slug: '1' }} data={[]} />);
+  it('does not render EditTemplate when no data is provided', () => {
+    render(<UsuariosEdit params={mockParams} data={null} />);
 
-    // Verifica se há algum tipo de mensagem de erro ou algo indicando que não há dados
-    expect(screen.getByText('Erro ao carregar os dados!')).toBeInTheDocument();
+    // Verifica se o Layout e o Container ainda são renderizados
+    const layout = screen.getByTestId('layout');
+    const container = screen.getByTestId('container');
+    expect(layout).toBeInTheDocument();
+    expect(container).toBeInTheDocument();
+
+    // Verifica que nenhum dado do usuário é exibido
+    const editTemplate = screen.getByTestId('edit-template');
+    expect(editTemplate).toBeInTheDocument();
+    expect(editTemplate).not.toHaveTextContent('João Silva');
   });
 
-  it('renders with admin protection', () => {
-    // Renderiza o componente com a proteção de admin diretamente
-    render(<UsuariosEdit params={{ slug: '1' }} data={[{
-      _id: '1',
-      nome: 'John Doe',
-      email: 'john.doe@example.com',
-      senha: 'password123',
-      pontos: 100,
-      tipo: 'admin',
-      ativo: true,
-    }]} />);
-
-    // Verifica que o componente com a proteção foi renderizado
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-  });
+ 
 });

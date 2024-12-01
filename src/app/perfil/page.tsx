@@ -15,7 +15,7 @@ const PerfilPage = () => {
     endereco: '',
     profileImage: ''
   });
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // Estado para controlar o Snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const PerfilPage = () => {
 
   const enviarFormulario = (event: React.FormEvent) => {
     event.preventDefault();
-    setSnackbarOpen(true); // Abre o Snackbar
+    setSnackbarOpen(true);
   };
 
   const alterarSenha = () => {
@@ -48,23 +48,39 @@ const PerfilPage = () => {
   };
 
   const handleSnackbarClose = () => {
-    setSnackbarOpen(false); // Fecha o Snackbar
+    setSnackbarOpen(false);
   };
 
   return (
     <Layout>
-      <Container sx={{ paddingTop: 4 }}>
+      <Container sx={{ paddingTop: 4 }} data-testid="perfil-page-container">
         {/* Mensagem fixa no topo */}
-        <Alert severity="info" sx={{ marginBottom: 2 }}>
+        <Alert 
+          severity="info" 
+          sx={{ marginBottom: 2 }} 
+          data-testid="construction-alert"
+        >
           Esta página está em construção. Funcionalidades serão implementadas em breve.
         </Alert>
-        <Card className="perfilCard" variant="outlined" sx={{ boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.45)" }}>
+        <Card 
+          className="perfilCard" 
+          variant="outlined" 
+          sx={{ boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.45)" }}
+          data-testid="perfil-card"
+        >
           <CardHeader title="Perfil do Usuário" />
           <CardContent>
-            <div className="imagemPerfil">
-              <Image className="userImage" src={userImage} alt="User Image Perfil" width={120} height={120} />
+            <div className="imagemPerfil" data-testid="profile-image-container">
+              <Image 
+                className="userImage" 
+                src={userImage} 
+                alt="User Image Perfil" 
+                width={120} 
+                height={120}
+                data-testid="profile-image"
+              />
             </div>
-            <form id="profileForm" onSubmit={enviarFormulario}>
+            <form id="profileForm" onSubmit={enviarFormulario} data-testid="perfil-form">
               <TextField
                 label="Nome"
                 variant="outlined"
@@ -73,6 +89,7 @@ const PerfilPage = () => {
                 value={userData.nome}
                 onChange={(e) => setUserData({ ...userData, nome: e.target.value })}
                 required
+                data-testid="nome-input"
               />
               <TextField
                 label="Endereço"
@@ -82,6 +99,7 @@ const PerfilPage = () => {
                 value={userData.endereco}
                 onChange={(e) => setUserData({ ...userData, endereco: e.target.value })}
                 required
+                data-testid="endereco-input"
               />
 
               <div style={{ marginBottom: '28px' }} /> 
@@ -96,6 +114,7 @@ const PerfilPage = () => {
                     paddingTop: { xs: '16px !important' }
                   }
                 }}
+                data-testid="button-grid"
               >
                 <Grid item>
                   <Button
@@ -107,6 +126,7 @@ const PerfilPage = () => {
                       height: '40px'
                     }}
                     onClick={alterarSenha}
+                    data-testid="alterar-senha-button"
                   >
                     Alterar Senha
                   </Button>
@@ -118,6 +138,7 @@ const PerfilPage = () => {
                     color="primary"
                     fullWidth
                     sx={{ height: '40px' }}
+                    data-testid="salvar-button"
                   >
                     Salvar
                   </ButtonAtom>
@@ -129,11 +150,17 @@ const PerfilPage = () => {
         {/* Snackbar */}
         <Snackbar
           open={snackbarOpen}
-          autoHideDuration={3000} // Fecha automaticamente após 3 segundos
+          autoHideDuration={3000}
           onClose={handleSnackbarClose}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          data-testid="snackbar"
         >
-          <Alert onClose={handleSnackbarClose} severity="info" sx={{ width: '100%' }}>
+          <Alert 
+            onClose={handleSnackbarClose} 
+            severity="info" 
+            sx={{ width: '100%' }}
+            data-testid="perfil-snackbar-alert"
+          >
             Estamos trabalhando nessa funcionalidade.
           </Alert>
         </Snackbar>

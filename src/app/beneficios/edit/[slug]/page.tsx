@@ -15,10 +15,12 @@ interface BeneficioEditProps {
 }
 
 const BeneficiosEdit: React.FC<BeneficioEditProps> = ({ params, dados }) => {
-  const [beneficio, setBeneficio] = useState<IBeneficios>();
-
+  const [beneficio, setBeneficio] = useState<IBeneficios | undefined>(undefined);
   useEffect(() => {
-    if (!dados) return;
+    if (!dados || dados.length === 0) {
+      setBeneficio(undefined);
+      return;
+    }
     const {
       _id,
       nome: nome,

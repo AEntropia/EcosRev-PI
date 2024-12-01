@@ -1,124 +1,122 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ProfilePage from '../../../../src/app/perfil/edit/[slug]/page';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
+import React from 'react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import ProfilePage from '@/app/perfil/edit/[slug]/page';
 
-// Mock do componente Image do Next.js
-jest.mock('next/image', () => {
-  return {
-    __esModule: true,
-    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
-      <img src={src} alt={alt} width={width} height={height} />
-    ),
-  };
-});
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+  })),
+}));
 
-// Configurando o MSW para simular a API
-const server = setupServer(
-  rest.get('https://randomuser.me/api/', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        results: [
-          {
-            name: { first: 'John', last: 'Doe' },
-            location: { street: { name: 'Main St', number: 123 } },
-            picture: { large: 'https://example.com/avatar.jpg' },
+// Mock fetch
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve({
+      results: [
+        {
+          name: { first: 'John', last: 'Doe' },
+          location: { 
+            street: { 
+              name: 'Main Street', 
+              number: 123 
+            } 
           },
-        ],
-      })
-    );
+          picture: { 
+            large: 'https://example.com/profile.jpg' 
+          }
+        }
+      ]
+    }),
   })
-);
+) as jest.Mock;
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+describe('ProfilePage Component', () => {
+  // Reusable setup function
+  const setup = () => render(<ProfilePage />);
 
-describe('ProfilePage', () => {
-  it('renders the profile form with default values and fetches user data', async () => {
-    render(<ProfilePage />);
-
-    // Verificando se os elementos básicos estão presentes
-    expect(screen.getByText('Perfil do Usuário')).toBeInTheDocument();
-    expect(screen.getByLabelText('Nome')).toBeInTheDocument();
-    expect(screen.getByLabelText('Endereço')).toBeInTheDocument();
-    expect(screen.getByLabelText('Senha')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /salvar/i })).toBeInTheDocument();
-
-    // Esperando que os dados da API sejam carregados
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
-      expect(screen.getByDisplayValue('Main St, 123')).toBeInTheDocument();
-      expect(screen.getByAltText('Foto do Perfil')).toHaveAttribute('src', 'https://example.com/avatar.jpg');
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('updates the form fields when user edits them', async () => {
-    render(<ProfilePage />);
+  it('renders the profile page with initial state', async () => {
+    setup();
 
-    // Esperar que os dados sejam carregados
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
-    });
-
-    // Simulando alteração no campo Nome
-    const nameField = screen.getByLabelText('Nome');
-    fireEvent.change(nameField, { target: { value: 'Jane Smith' } });
-    expect(nameField).toHaveValue('Jane Smith');
-
-    // Simulando alteração no campo Endereço
-    const addressField = screen.getByLabelText('Endereço');
-    fireEvent.change(addressField, { target: { value: 'Elm St, 456' } });
-    expect(addressField).toHaveValue('Elm St, 456');
-
-    // Simulando alteração no campo Senha
-    const passwordField = screen.getByLabelText('Senha');
-    fireEvent.change(passwordField, { target: { value: 'newpassword123' } });
-    expect(passwordField).toHaveValue('newpassword123');
-  });
-
-  it('submits the form successfully and displays a confirmation alert', async () => {
-    // Mock de `window.alert`
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-
-    render(<ProfilePage />);
-
-    // Esperar que os dados sejam carregados
-    await waitFor(() => {
-      expect(screen.getByDisplayValue('John Doe')).toBeInTheDocument();
-    });
-
-    // Simulando o envio do formulário
-    const submitButton = screen.getByRole('button', { name: /salvar/i });
-    fireEvent.click(submitButton);
-
-    // Verificando se o alerta foi chamado
-    expect(alertMock).toHaveBeenCalledWith('Alterações salvas com sucesso!');
-
-    alertMock.mockRestore();
-  });
-
-  it('handles API errors gracefully', async () => {
-    // Configurando a API para retornar erro
-    server.use(
-      rest.get('https://randomuser.me/api/', (req, res, ctx) => {
-        return res(ctx.status(500));
-      })
-    );
-
-    render(<ProfilePage />);
-
-    // Verificando se o console.error foi chamado
-    const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation();
-
-    // O erro não impede a renderização do componente
+    // Check page title
     expect(screen.getByText('Perfil do Usuário')).toBeInTheDocument();
 
-    // Verificando se o erro foi registrado
+    // Check form fields initially
     await waitFor(() => {
-      expect(consoleErrorMock).toHaveBeenCalledWith('Erro ao obter os dados do usuário:', expect.anything());
+      expect(screen.getByLabelText(/nome/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/endereço/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/senha/i)).toBeInTheDocument();
+    });
+  });
+
+  it('fetches and displays user data', async () => {
+    setup();
+
+    // Wait for user data to be fetched and displayed
+    await waitFor(() => {
+      expect(screen.getByLabelText(/nome/i)).toHaveValue('John Doe');
+      expect(screen.getByLabelText(/endereço/i)).toHaveValue('Main Street, 123');
     });
 
-    consoleErrorMock.mockRestore();
+    // Check if fetch was called
+    expect(global.fetch).toHaveBeenCalledWith('https://randomuser.me/api/');
+  });
+
+  it('allows user to edit profile fields', async () => {
+    setup();
+
+    // Wait for initial data to load
+    await waitFor(() => {
+      const nameInput = screen.getByLabelText(/nome/i);
+      const addressInput = screen.getByLabelText(/endereço/i);
+      const passwordInput = screen.getByLabelText(/senha/i);
+
+      // Change input values
+      fireEvent.change(nameInput, { target: { value: 'Jane Smith' } });
+      fireEvent.change(addressInput, { target: { value: '456 Test Street' } });
+      fireEvent.change(passwordInput, { target: { value: 'newpassword123' } });
+
+      // Check if values are updated
+      expect(nameInput).toHaveValue('Jane Smith');
+      expect(addressInput).toHaveValue('456 Test Street');
+      expect(passwordInput).toHaveValue('newpassword123');
+    });
+  });
+
+
+  it('renders avatar with correct source', async () => {
+    setup();
+
+    // Wait for avatar to load
+    await waitFor(() => {
+      const avatar = screen.getByAltText('Foto do Perfil');
+      expect(avatar).toHaveAttribute('src', 'https://example.com/profile.jpg');
+    });
+  });
+
+  it('handles fetch error gracefully', async () => {
+    // Mock fetch to throw an error
+    global.fetch = jest.fn(() => Promise.reject(new Error('Fetch failed')));
+
+    // Spy on console.error to check error handling
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    setup();
+
+    // Wait for error to be logged
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Erro ao obter os dados do usuário:', 
+        expect.any(Error)
+      );
+    });
+
+    // Restore mocks
+    consoleSpy.mockRestore();
   });
 });

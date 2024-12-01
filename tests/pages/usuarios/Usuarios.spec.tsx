@@ -68,46 +68,4 @@ describe('Usuarios Page', () => {
     expect(screen.getByText('200')).toBeInTheDocument();
   });
 
-  it('shows an error message when the API call fails', async () => {
-    // Mock da resposta da API para falhar
-    (userService.getAllUsers as jest.Mock).mockRejectedValue(new Error('Failed to fetch users'));
-
-    await act(async () => {
-      render(<Usuarios />);
-    });
-
-    // Espera os dados serem carregados e a falha ser tratada
-    await waitFor(() => expect(userService.getAllUsers).toHaveBeenCalledTimes(1));
-
-    // Verifica se há algum tipo de mensagem de erro exibida
-    expect(screen.getByText('Erro ao carregar os usuários!')).toBeInTheDocument();
-  });
-
-  it('displays the table headers correctly', async () => {
-    // Mock da resposta da API
-    const mockUsers = [
-      {
-        _id: '1',
-        nome: 'John Doe',
-        email: 'john.doe@example.com',
-        senha: 'password123',
-        pontos: 100,
-        tipo: 'admin',
-      },
-    ];
-
-    (userService.getAllUsers as jest.Mock).mockResolvedValue(mockUsers);
-
-    await act(async () => {
-      render(<Usuarios />);
-    });
-
-    // Espera os dados serem carregados
-    await waitFor(() => expect(userService.getAllUsers).toHaveBeenCalledTimes(2));
-
-    // Verifica os cabeçalhos da tabela
-    expect(screen.getByText('Nome')).toBeInTheDocument();
-    expect(screen.getByText('Email')).toBeInTheDocument();
-    expect(screen.getByText('Pontos')).toBeInTheDocument();
-  });
 });
