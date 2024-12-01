@@ -26,6 +26,7 @@ const ButtonAtom: React.FC<ButtonAtomProps> = ({
       fullWidth={fullWidth}
       variant={variant}
       color={color}
+      data-testid="submit-button" // Adicionado o data-testid
       sx={{
         ...sx,
         color: 'white',
