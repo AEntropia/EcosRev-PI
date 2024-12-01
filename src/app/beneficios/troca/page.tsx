@@ -232,6 +232,7 @@ const Beneficios = () => {
         
         <Box 
           sx={{ 
+            marginTop: { xs: 2, sm: 2, md: 2, lg: 3 },  // Adiciona um espaço extra no topo para TV
             width: '100%',
             maxWidth: { xs: '100%', sm: 400, md: 400, lg: 500, xl: 500 },
             bgcolor: 'background.paper',
