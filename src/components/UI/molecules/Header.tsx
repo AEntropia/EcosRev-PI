@@ -14,11 +14,21 @@ const Header = () => {
 
   const [userType, setUserType] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(false);
 
   useEffect(() => {
     const type = isAdmin();
     setUserType(type);
     console.log("TESTANDO TIPO: ", type);
+
+    // Verificar orientação da tela
+    const updateOrientation = () => {
+      setIsLandscape(window.matchMedia("(orientation: landscape)").matches);
+    };
+    updateOrientation();
+
+    window.addEventListener("resize", updateOrientation);
+    return () => window.removeEventListener("resize", updateOrientation);
   }, []);
 
   const isSpecialPage = [
@@ -48,6 +58,9 @@ const Header = () => {
     setIsDrawerOpen(false);
   };
 
+  // Esconder Header em páginas especiais no modo paisagem
+  if (isSpecialPage && isLandscape) return null;
+
   return (
     <Box
       display="flex"
@@ -60,14 +73,7 @@ const Header = () => {
         left: 0,
         width: "100%",
         zIndex: 1000,
-        boxShadow: `0px 1px 1px rgba(0, 0, 0, 0.5)`,
-        isplay: {
-          xs: "none", // Esconde o header em telas pequenas (horizontal)
-          sm: "flex", // Mostra o header em telas maiores
-        },
-        "@media (orientation: landscape) and (max-width: 936px)": {
-          display: "none", // Esconde o header em modo paisagem para dispositivos móveis
-        },
+        boxShadow: "0px 1px 1px rgba(0, 0, 0, 0.5)",
       }}
     >
       {/* Menu Hamburguer - à esquerda */}
@@ -82,12 +88,12 @@ const Header = () => {
           <MenuIcon />
         </IconButton>
       )}
-  
+
       {/* Logo - no centro */}
       <Box display="flex" alignItems="center" flexShrink={0}>
         <Image src={logoSvg} alt="EcosRev Logo" width={200} height={112} priority />
       </Box>
-  
+
       {/* Links da Navegação - ocultar em telas pequenas */}
       {!isSpecialPage && (
         <Box
@@ -114,7 +120,7 @@ const Header = () => {
           ))}
         </Box>
       )}
-  
+
       {/* Botão Sair - à direita */}
       {!isSpecialPage && (
         <Box display="flex" justifyContent="flex-end" flexShrink={0} ml="auto" mr={3}>
@@ -129,7 +135,7 @@ const Header = () => {
           </LeafButton>
         </Box>
       )}
-  
+
       {/* Drawer no lado esquerdo (para dispositivos móveis) */}
       <Drawer anchor="left" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <Box sx={{ width: 250 }}>
@@ -160,7 +166,6 @@ const Header = () => {
       </Drawer>
     </Box>
   );
-  
-};  
+};
 
 export default Header;
