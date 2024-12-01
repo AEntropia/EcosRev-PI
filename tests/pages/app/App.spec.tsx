@@ -72,6 +72,7 @@ describe('Home (Login Page)', () => {
     expect(login).toHaveBeenCalledWith('test@example.com', 'password123');
   });
 
+<<<<<<< HEAD
   it('shows an error message when login fails', async () => {
     render(<Home />);
 
@@ -90,7 +91,11 @@ describe('Home (Login Page)', () => {
     fireEvent.click(submitButton);
 
     // Verifica se o alerta de erro é chamado
-    await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Credenciais inválidas!'));
+    await waitFor(() => {
+      expect(
+        screen.getByText("Credenciais inválidas!")
+      ).toBeInTheDocument();
+    });
   });
 
   it('shows an alert if fields are empty and submit is clicked', async () => {
@@ -102,9 +107,15 @@ describe('Home (Login Page)', () => {
     fireEvent.click(submitButton);
 
     // Verifica se o alerta de erro é chamado
-    await waitFor(() => expect(window.alert).toHaveBeenCalledWith('Por favor, preencha os campos.'));
+    await waitFor(() => {
+      expect(
+        screen.getByText("Por favor, preencha os campos.")
+      ).toBeInTheDocument();
+    });
   });
 
+=======
+>>>>>>> 0102d4348b8c09d7998c9b53809416fbaf4446f0
   it('calls isAdmin when handleLogin is called', async () => {
     render(<Home />);
 
