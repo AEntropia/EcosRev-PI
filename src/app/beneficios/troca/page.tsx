@@ -32,7 +32,7 @@ interface SelectableTableProps {
 const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) => {
   const [selectedRows, setSelectedRows] = useState<IRow[]>([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage] = useState(3);
+  const [rowsPerPage] = useState(5);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -111,7 +111,7 @@ const SelectableTable: React.FC<SelectableTableProps> = ({ rows, onRowSelect }) 
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[3]}
+        rowsPerPageOptions={[5]}
         component="div"
         count={rows.length}
         rowsPerPage={rowsPerPage}
@@ -242,12 +242,12 @@ const Beneficios = () => {
     <Layout>
       <Container 
         sx={{ 
-          paddingTop: { xs: 2, sm: 3, md: 4 }, 
-          paddingBottom: { xs: 2, sm: 3, md: 4 },
+          paddingTop: { xs: 1, sm: 2, md: 3 }, 
+          paddingBottom: { xs: 1, sm: 2, md: 3 },
           display: 'flex', 
           flexDirection: 'column', 
-          gap: { xs: 2, sm: 2, md: 3 },
-          minHeight: '100vh',
+          gap: { xs: 1, sm: 2, md: 2 },
+          minHeight: 'auto',
           justifyContent: 'space-between'
         }}
       >
