@@ -226,7 +226,7 @@ const Beneficios = () => {
           rows={rows} 
           onRowSelect={handleRowSelect} 
           sx={{
-            marginBottom: { xs: 2, sm: 0 }, // Adds margin on small screens (xs)
+            marginBottom: { xs: 1, sm: 0 }, 
           }}
         />
         
