@@ -1,8 +1,9 @@
-"use client";
+'use client'
 
+import { useState } from "react";
 import { IBeneficios } from "@/interfaces/IBeneficios";
 import { BeneficioEditValidator } from "@/validators/BeneficioEditValidator";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, TextField, Typography, Snackbar, Alert } from "@mui/material";
 import { useFormik } from "formik";
 import Layout from "@/components/UI/organisms/Layout";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,10 @@ import { withAdminProtection } from "@/components/HOCS/withAdminProtection";
 import ButtonAtom from "@/components/UI/atoms/ButtonAtom";
 
 const CadastroTemplate: React.FC = () => {
-  
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
+
   const formik = useFormik<IBeneficios>({
     initialValues: {
       data: "",
@@ -22,14 +26,26 @@ const CadastroTemplate: React.FC = () => {
     },
     validationSchema: BeneficioEditValidator,
     onSubmit: async (values) => {
-  
       try {
         const response = await benefitsService.createBenefit(values);
         console.log("Cadastro realizado com sucesso:", response);
-        alert("Cadastro realizado com sucesso!");
+        
+        // Show success message in Snackbar
+        setSnackbarMessage("Cadastro realizado com sucesso!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+
+        // Wait for 2 seconds before redirecting
+        setTimeout(() => {
+          router.push("/beneficios");
+        }, 2000); // 2000 milliseconds = 2 seconds
       } catch (error) {
         console.error("Erro ao cadastrar benefício:", error);
-        alert("Erro ao cadastrar benefício, verifique com o suporte");
+        
+        // Show error message in Snackbar
+        setSnackbarMessage("Erro ao cadastrar benefício, verifique com o suporte");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       }
     },
   });
@@ -40,6 +56,10 @@ const CadastroTemplate: React.FC = () => {
 
   const handleCancel = () => {
     router.push("/home");
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
@@ -76,11 +96,11 @@ const CadastroTemplate: React.FC = () => {
             label="Data"
             fullWidth
             margin="normal"
-            type="date" 
+            type="date"
             value={values.data}
             onChange={handleChange}
-            error={!!errors.data }
-            helperText={errors.data }
+            error={!!errors.data}
+            helperText={errors.data}
             InputLabelProps={{
               shrink: true,
             }}
@@ -119,11 +139,7 @@ const CadastroTemplate: React.FC = () => {
           />
 
           <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 3, gap: 2 }}>
-            <Button variant="outlined" color="primary"  onClick={handleCancel}
-            sx={{ 
-              boxShadow: 3,
-            }}
-           >
+            <Button variant="outlined" color="primary" onClick={handleCancel} sx={{ boxShadow: 3 }}>
               Cancelar
             </Button>
             <ButtonAtom variant="contained" type="submit">
@@ -132,6 +148,17 @@ const CadastroTemplate: React.FC = () => {
           </Box>
         </Box>
       </Box>
+
+      {/* Snackbar for success or error messages */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: "100%" }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Layout>
   );
 };
