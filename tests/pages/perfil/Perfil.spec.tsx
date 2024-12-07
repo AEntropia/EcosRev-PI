@@ -3,11 +3,15 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import PerfilPage from "../../../src/app/perfil/page";
 import userEvent from "@testing-library/user-event";
 
-jest.mock("next/image", () => ({
-  __esModule: true,
-  default: ({ alt }: { alt: string }) => <img alt={alt} data-testid="next-image" />,
-}));
-
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
 jest.mock("@/components/UI/organisms/Layout", () => {
   return ({ children }: { children: React.ReactNode }) => <div data-testid="layout">{children}</div>;
 });

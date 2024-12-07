@@ -3,9 +3,15 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import PasswordReset from "../../../src/app/passwordReset/page";
 import { useRouter } from "next/navigation";
 
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(),
-}));
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
 
 jest.mock("@/components/templates/auth/AuthTemplate", () => {
   return ({ children }: any) => <div data-testid="auth-template">{children}</div>;

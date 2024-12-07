@@ -3,6 +3,16 @@ import { render, screen, waitFor } from "@testing-library/react";
 import Beneficios from "@/app/beneficios/page";
 import { benefitsService } from "../../../routes/benefitRoute";
 
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
+
 jest.mock("../../../routes/benefitRoute", () => ({
   benefitsService: {
     getAllBenefits: jest.fn(),

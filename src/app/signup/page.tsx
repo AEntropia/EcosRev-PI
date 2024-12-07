@@ -84,7 +84,7 @@ const Signup: React.FC = () => {
           <Typography
             variant="h5"
             color="primary"
-            gutterBottoM
+            gutterBottom
             sx={{
               textShadow: "2px 2px 4px rgba(255, 255, 255, 1)", 
               color: "primary.main",
@@ -95,57 +95,69 @@ const Signup: React.FC = () => {
 
           {/* Formulário de Cadastro */}
           <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
-            <FormTextField
-              label="Nome"
-              variant="outlined"
-              fullWidth
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              required
-            />
-            <FormTextField
-              label="E-mail"
-              variant="outlined"
-              fullWidth
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-            <FormTextField
-              label="Senha"
-              variant="outlined"
-              fullWidth
-              name="senha"
-              type="password"
-              value={formData.senha}
-              onChange={handleChange}
-              required
-            />
-            <FormTextField
-              label="Confirmar Senha"
-              variant="outlined"
-              fullWidth
-              name="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              required
-            />
-
-            {error && <Typography color="error">{error}</Typography>}
-            {success && <Typography color="success">{success}</Typography>}
-
-            <ButtonAtom
-              type="submit"
-              fullWidth
-              sx={{ marginTop: 3, marginBottom: 2 }}
-            >
-              Criar Conta
-            </ButtonAtom>
-          </Box>
+  <FormTextField
+    label="Nome"
+    variant="outlined"
+    fullWidth
+    name="nome"
+    value={formData.nome}
+    onChange={handleChange}
+    required
+    inputProps={{ "data-testid": "nome-input" }}
+  />
+  <FormTextField
+    label="E-mail"
+    variant="outlined"
+    fullWidth
+    name="email"
+    type="email"
+    value={formData.email}
+    onChange={handleChange}
+    required
+    inputProps={{ "data-testid": "email-input" }}
+  />
+  <FormTextField
+    label="Senha"
+    variant="outlined"
+    fullWidth
+    name="senha"
+    type="password"
+    value={formData.senha}
+    onChange={handleChange}
+    required
+    inputProps={{ "data-testid": "senha-input" }}
+  />
+  <FormTextField
+    label="Confirmar Senha"
+    variant="outlined"
+    fullWidth
+    name="confirmPassword"
+    type="password"
+    value={formData.confirmPassword}
+    onChange={handleChange}
+    required
+    inputProps={{ "data-testid": "confirm-password-input" }}
+  />
+  {error && (
+    <Typography color="error" data-testid="error-message">
+      {error}
+    </Typography>
+  )}
+  {success && (
+    <Typography color="success" data-testid="success-message">
+      {success}
+    </Typography>
+  )}
+  <ButtonAtom
+  data-testid="submit-button" // Adicionado o data-testid
+    type="submit"
+    fullWidth
+    sx={{ marginTop: 3, marginBottom: 2 }}
+    
+  >
+    Criar Conta
+  </ButtonAtom>
+</Box>
 
           <Box sx={{ marginTop: 2 }}>
             <Link href="/" passHref>

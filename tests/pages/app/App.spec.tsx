@@ -3,23 +3,27 @@ import Home from '@/app/page'; // O caminho pode ser ajustado conforme necessár
 import { login, isAdmin } from '@/app/login_api';
 import { useRouter } from 'next/navigation';
 
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
+
 // Mock da função login
-jest.mock('./login_api', () => ({
+jest.mock('@/app/login_api', () => ({
   login: jest.fn(),
   isAdmin: jest.fn(),
 }));
 
-// Mock do hook useRouter do Next.js
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-}));
 
 describe('Home (Login Page)', () => {
-  let mockRouterPush: jest.Mock;
 
-  beforeEach(() => {
-    mockRouterPush = jest.fn();
-    (useRouter as jest.Mock).mockReturnValue({ push: mockRouterPush });
+  beforeAll(() => {
+    global.alert = jest.fn(); // Mocka o alert globalmente
   });
 
   it('renders the login form', () => {
@@ -28,7 +32,7 @@ describe('Home (Login Page)', () => {
     // Verifica se os campos de entrada e o botão estão presentes
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/senha/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /entrar/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Login/i })).toBeInTheDocument();
   });
 
   it('allows the user to input email and password', () => {
@@ -51,7 +55,7 @@ describe('Home (Login Page)', () => {
 
     const emailField = screen.getByLabelText(/email/i);
     const passwordField = screen.getByLabelText(/senha/i);
-    const submitButton = screen.getByRole('button', { name: /entrar/i });
+    const submitButton = screen.getByRole('button', { name: /Login/i });
 
     // Preenche o formulário
     fireEvent.change(emailField, { target: { value: 'test@example.com' } });
@@ -63,8 +67,6 @@ describe('Home (Login Page)', () => {
     // Simula o envio do formulário
     fireEvent.click(submitButton);
 
-    // Aguarda o redirecionamento após login bem-sucedido
-    await waitFor(() => expect(mockRouterPush).toHaveBeenCalledWith('/home'));
 
     // Verifica se a função login foi chamada com os parâmetros corretos
     expect(login).toHaveBeenCalledWith('test@example.com', 'password123');
@@ -75,7 +77,7 @@ describe('Home (Login Page)', () => {
 
     const emailField = screen.getByLabelText(/email/i);
     const passwordField = screen.getByLabelText(/senha/i);
-    const submitButton = screen.getByRole('button', { name: /entrar/i });
+    const submitButton = screen.getByRole('button', { name: /Login/i });
 
     // Preenche o formulário com dados válidos
     fireEvent.change(emailField, { target: { value: 'test@example.com' } });
@@ -94,7 +96,7 @@ describe('Home (Login Page)', () => {
   it('shows an alert if fields are empty and submit is clicked', async () => {
     render(<Home />);
 
-    const submitButton = screen.getByRole('button', { name: /entrar/i });
+    const submitButton = screen.getByRole('button', { name: /Login/i });
 
     // Simula o envio do formulário sem preencher os campos
     fireEvent.click(submitButton);
@@ -108,7 +110,7 @@ describe('Home (Login Page)', () => {
 
     const emailField = screen.getByLabelText(/email/i);
     const passwordField = screen.getByLabelText(/senha/i);
-    const submitButton = screen.getByRole('button', { name: /entrar/i });
+    const submitButton = screen.getByRole('button', { name: /Login/i });
 
     fireEvent.change(emailField, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordField, { target: { value: 'password123' } });

@@ -5,6 +5,16 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import { benefitsService } from "../../../../routes/benefitRoute";
 
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
+
 jest.mock("formik", () => ({
   useFormik: jest.fn(),
 }));

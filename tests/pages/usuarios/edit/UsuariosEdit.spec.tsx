@@ -5,6 +5,16 @@ import { withDataFetching } from '@/components/HOCS/withDataFetching';
 import { IUsuarios } from '@/interfaces/IUsuarios';
 import EditTemplate from '@/components/templates/usuarios/EditTemplate';
 
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
+
 // Mock do serviço de dados (para o HOC withDataFetching)
 jest.mock('@/components/HOCS/withDataFetching', () => ({
   withDataFetching: () => (Component: React.ComponentType) => (props: any) => <Component {...props} data={[{

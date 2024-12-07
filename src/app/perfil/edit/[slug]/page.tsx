@@ -82,7 +82,7 @@ const ProfilePage = () => {
               margin="normal"
               onChange={(e) => setUserProfile({ ...userProfile, senha: e.target.value })}
             />
-            <ButtonAtom variant="contained" type="submit" className="save-button">
+            <ButtonAtom variant="contained" type="submit" >
               Salvar
             </ButtonAtom>
           </form>

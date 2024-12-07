@@ -3,13 +3,20 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import PasswordRecovery from "../../../src/app/passwordRecovery/page";
 import { useRouter } from "next/navigation";
 
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(),
+// Mock do componente Image do Next.js
+jest.mock('next/image', () => {
+  return {
+    __esModule: true,
+    default: ({ src, alt, width, height }: { src: string, alt: string, width: number, height: number }) => (
+      <img src={src} alt={alt} width={width} height={height} />
+    ),
+  };
+});
+
+jest.mock("@/components/templates/auth/AuthTemplate", () => ({
+  AuthTemplate: jest.fn(({ children }: any) => <div>{children}</div>),
 }));
 
-jest.mock("@/components/templates/auth/AuthTemplate", () => {
-  return ({ children }: any) => <div data-testid="auth-template">{children}</div>;
-});
 
 jest.mock("@/components/UI/molecules/Header", () => {
   return jest.fn(() => <div data-testid="header" />);
@@ -17,7 +24,12 @@ jest.mock("@/components/UI/molecules/Header", () => {
 
 jest.mock("@/components/UI/atoms/FormTextField", () => {
   return jest.fn(({ label, ...props }: any) => (
-    <input placeholder={label} {...props} data-testid="form-text-field" />
+    <input
+      placeholder={label}
+      {...props}
+      data-testid="form-text-field"
+      type="email"
+    />
   ));
 });
 
@@ -29,15 +41,21 @@ jest.mock("@/components/UI/atoms/ButtonAtom", () => {
   ));
 });
 
-describe("PasswordRecovery Component", () => {
+jest.mock("../../../public/images/roadImg.jpeg", () => ({
+  src: "mocked-road-image-url",
+}));
+
+describe("PasswordRecovery Page", () => {
+  const mockPush = jest.fn();
+
   beforeEach(() => {
     jest.clearAllMocks();
+    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
   });
 
   it("deve renderizar corretamente todos os elementos", () => {
     render(<PasswordRecovery />);
 
-    // Verifica se os componentes principais foram renderizados
     expect(screen.getByTestId("auth-template")).toBeInTheDocument();
     expect(screen.getByTestId("header")).toBeInTheDocument();
     expect(screen.getByTestId("form-text-field")).toBeInTheDocument();
@@ -50,47 +68,63 @@ describe("PasswordRecovery Component", () => {
     render(<PasswordRecovery />);
 
     const emailField = screen.getByTestId("form-text-field");
-    fireEvent.change(emailField, { target: { value: "user@example.com" } });
+    fireEvent.change(emailField, { target: { value: "test@example.com" } });
 
-    expect(emailField).toHaveValue("user@example.com");
+    expect(emailField).toHaveValue("test@example.com");
   });
 
-  it("deve exibir mensagem de sucesso após enviar o formulário", async () => {
+  it("deve exibir mensagem de sucesso após o envio do formulário", async () => {
     render(<PasswordRecovery />);
 
     const emailField = screen.getByTestId("form-text-field");
     const submitButton = screen.getByTestId("button-atom");
 
-    fireEvent.change(emailField, { target: { value: "user@example.com" } });
+    fireEvent.change(emailField, { target: { value: "test@example.com" } });
     fireEvent.click(submitButton);
 
-    // Verifica se a mensagem de sucesso é exibida após o envio
     await waitFor(() => {
       expect(
         screen.getByText("Link de recuperação de senha enviado com sucesso!")
       ).toBeInTheDocument();
     });
 
-    // Verifica se o campo de e-mail é limpo após o sucesso
+    // O campo de e-mail deve ser limpo após o envio
     expect(emailField).toHaveValue("");
   });
 
-  it("deve lidar com falha no envio do formulário", async () => {
-    jest.spyOn(global, "Promise").mockImplementation(() => {
-      throw new Error("Simulated failure");
-    });
+  it("deve exibir mensagem de erro caso o envio falhe", async () => {
+    jest.spyOn(global, "Promise").mockImplementationOnce(
+      () => new Promise((_, reject) => reject("Simulated failure"))
+    );
 
     render(<PasswordRecovery />);
 
     const emailField = screen.getByTestId("form-text-field");
     const submitButton = screen.getByTestId("button-atom");
 
-    fireEvent.change(emailField, { target: { value: "user@example.com" } });
+    fireEvent.change(emailField, { target: { value: "test@example.com" } });
     fireEvent.click(submitButton);
 
-    // Verifica se a mensagem de erro é exibida após falha
     await waitFor(() => {
-      expect(screen.getByText("Erro ao enviar link de recuperação de senha!")).toBeInTheDocument();
+      expect(
+        screen.getByText("Erro ao enviar link de recuperação de senha!")
+      ).toBeInTheDocument();
     });
+  });
+
+  it("deve navegar para a página de login ao clicar no link", () => {
+    render(<PasswordRecovery />);
+
+    const loginLink = screen.getByText("Voltar para Login");
+    fireEvent.click(loginLink);
+
+    expect(mockPush).toHaveBeenCalledWith("/");
+  });
+
+  it("deve exibir a imagem de fundo corretamente", () => {
+    render(<PasswordRecovery />);
+
+    const backgroundImage = screen.getByTestId("auth-template");
+    expect(backgroundImage).toHaveStyle(`background-image: url(mocked-road-image-url)`);
   });
 });
